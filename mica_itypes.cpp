@@ -12,6 +12,7 @@
 /* MICA includes */
 #include "mica_utils.h"
 #include "mica_itypes.h"
+#include <map>
 
 /* Global variables */
 
@@ -71,7 +72,7 @@ VOID itypes_count(UINT32 gid){
 // initialize default groups
 VOID init_itypes_default_groups(){
 
-	number_of_groups = 12;
+	number_of_groups = 13;
 
 	group_identifiers = (identifier**)checked_malloc((number_of_groups+1)*sizeof(identifier*));
 	group_ids_cnt = (INT64*)checked_malloc((number_of_groups+1)*sizeof(INT64));
@@ -121,12 +122,14 @@ VOID init_itypes_default_groups(){
 	group_identifiers[3][4].str = checked_strdup("BITBYTE");
 
 	// floating point instructions
-	group_ids_cnt[4] = 2;
+	group_ids_cnt[4] = 3;
 	group_identifiers[4] = (identifier*)checked_malloc(group_ids_cnt[4]*sizeof(identifier));
 	group_identifiers[4][0].type = identifier_type::ID_TYPE_CATEGORY;
 	group_identifiers[4][0].str = checked_strdup("X87_ALU");
 	group_identifiers[4][1].type = identifier_type::ID_TYPE_CATEGORY;
 	group_identifiers[4][1].str = checked_strdup("FCMOV");
+	group_identifiers[4][2].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[4][2].str = checked_strdup("LOGICAL_FP");
 
 	// pop/push instructions (stack usage)
 	group_ids_cnt[5] = 2;
@@ -148,16 +151,20 @@ VOID init_itypes_default_groups(){
 	group_identifiers[7][0].type = identifier_type::ID_TYPE_CATEGORY;
 	group_identifiers[7][0].str = checked_strdup("STRINGOP");
 
-	// [!] MMX/SSE instructions
-	group_ids_cnt[8] = 2;
+	// [!] (MMX/SSE/AVX) vector instructions
+	group_ids_cnt[8] = 4;
 	group_identifiers[8] = (identifier*)checked_malloc(group_ids_cnt[8]*sizeof(identifier));
 	group_identifiers[8][0].type = identifier_type::ID_TYPE_CATEGORY;
 	group_identifiers[8][0].str = checked_strdup("MMX");
 	group_identifiers[8][1].type = identifier_type::ID_TYPE_CATEGORY;
 	group_identifiers[8][1].str = checked_strdup("SSE");
+	group_identifiers[8][2].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[8][2].str = checked_strdup("AVX2");
+	group_identifiers[8][3].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[8][3].str = checked_strdup("AVX");
 
 	// other (interrupts, rotate instructions, semaphore, conditional move, system)
-	group_ids_cnt[9] = 8;
+	group_ids_cnt[9] = 11;
 	group_identifiers[9] = (identifier*)checked_malloc(group_ids_cnt[9]*sizeof(identifier));
 	group_identifiers[9][0].type = identifier_type::ID_TYPE_CATEGORY;
 	group_identifiers[9][0].str = checked_strdup("INTERRUPT");
@@ -175,6 +182,12 @@ VOID init_itypes_default_groups(){
 	group_identifiers[9][6].str = checked_strdup("PREFETCH");
 	group_identifiers[9][7].type = identifier_type::ID_TYPE_CATEGORY;
 	group_identifiers[9][7].str = checked_strdup("SYSCALL");
+	group_identifiers[9][8].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[9][8].str = checked_strdup("CONVERT");
+	group_identifiers[9][9].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[9][9].str = checked_strdup("XSAVE");
+	group_identifiers[9][10].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[9][10].str = checked_strdup("BROADCAST");
 
 	// [!] NOP instructions
 	group_ids_cnt[10] = 2;
@@ -189,6 +202,14 @@ VOID init_itypes_default_groups(){
 	group_identifiers[11] = (identifier*)checked_malloc(group_ids_cnt[11]*sizeof(identifier));
 	group_identifiers[11][0].type = identifier_type::ID_TYPE_SPECIAL;
 	group_identifiers[11][0].str = checked_strdup("reg_transfer");
+
+	// DATAXFER
+	group_ids_cnt[12] = 2;
+	group_identifiers[12] = (identifier*)checked_malloc(group_ids_cnt[12]*sizeof(identifier));
+	group_identifiers[12][0].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[12][0].str = checked_strdup("DATAXFER");
+	group_identifiers[12][1].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[12][1].str = checked_strdup("SETCC");
 }
 
 /* initializing */
@@ -322,6 +343,8 @@ VOID instrument_itypes(INS ins, VOID* v){
 	char opcode[50];
 	strcpy(cat,CATEGORY_StringShort(INS_Category(ins)).c_str());
 	strcpy(opcode,INS_Mnemonic(ins).c_str());
+	// printf("cat: %s\n", cat);
+	// printf("opcode: %s\n", opcode);
 	BOOL categorized = false;
 
 	// go over all groups, increase group count if instruction matches that group
@@ -374,7 +397,7 @@ VOID instrument_itypes(INS ins, VOID* v){
 						}
 					}
 					else{
-						cerr << "ERROR! Unknown identifier type specified (" << group_identifiers[i][j].type << ")." << endl;
+						cerr << "ERROR! Unknown identifier type specified (" << group_identifiers[i][j].type << ")." << i << j << endl;
 					}
 				}
 			}
