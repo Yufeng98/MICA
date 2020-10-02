@@ -108,18 +108,16 @@ VOID init_itypes_default_groups(){
 	group_identifiers[2][4].str = checked_strdup("CALL_NEAR");
 
 	// arithmetic instructions (integer)
-	group_ids_cnt[3] = 5;
+	group_ids_cnt[3] = 4;
 	group_identifiers[3] = (identifier*)checked_malloc(group_ids_cnt[3]*sizeof(identifier));
 	group_identifiers[3][0].type = identifier_type::ID_TYPE_CATEGORY;
 	group_identifiers[3][0].str = checked_strdup("LOGICAL");
 	group_identifiers[3][1].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[3][1].str = checked_strdup("DATAXFER");
+	group_identifiers[3][1].str = checked_strdup("BINARY");
 	group_identifiers[3][2].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[3][2].str = checked_strdup("BINARY");
+	group_identifiers[3][2].str = checked_strdup("FLAGOP");
 	group_identifiers[3][3].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[3][3].str = checked_strdup("FLAGOP");
-	group_identifiers[3][4].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[3][4].str = checked_strdup("BITBYTE");
+	group_identifiers[3][3].str = checked_strdup("BITBYTE");
 
 	// floating point instructions
 	group_ids_cnt[4] = 3;
@@ -369,18 +367,20 @@ VOID instrument_itypes(INS ins, VOID* v){
 				}
 				else{
 					if(group_identifiers[i][j].type == identifier_type::ID_TYPE_SPECIAL){
-						if(strcmp(group_identifiers[i][j].str, "mem_read") == 0 && INS_IsMemoryRead(ins) ){
+						if(strcmp(group_identifiers[i][j].str, "mem_read") == 0 && INS_IsMemoryRead(ins) && strcmp(group_identifiers[12][0].str, cat) == 0){
 							INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
+							cout << "MemoryRead: " << cat << " ";
 							categorized = true;
 							break;
 						}
 						else{
-							if(strcmp(group_identifiers[i][j].str, "mem_write") == 0 && INS_IsMemoryWrite(ins) ){
+							if(strcmp(group_identifiers[i][j].str, "mem_write") == 0 && INS_IsMemoryWrite(ins) && strcmp(group_identifiers[12][0].str, cat) == 0){
 								INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
+								cout << "MemoryWite: " << cat << " ";
 								categorized = true;
 								break;
 							}
-							else if(strcmp(group_identifiers[i][j].str, "reg_transfer") == 0 && INS_IsMov(ins) ){
+							else if(strcmp(group_identifiers[i][j].str, "reg_transfer") == 0 && INS_IsMov(ins) && strcmp(group_identifiers[12][0].str, cat) == 0){
 								UINT32 flag=0,n;
 								n=INS_OperandCount(ins);
 								for(UINT32 i=0;i<n;i++){
@@ -391,10 +391,12 @@ VOID instrument_itypes(INS ins, VOID* v){
 								}
 								if(flag==0)
 								    INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
+								cout << "Reg_transfer: " << cat << " ";
 							}
 							else{
 							}
 						}
+						cout << "\n";
 					}
 					else{
 						cerr << "ERROR! Unknown identifier type specified (" << group_identifiers[i][j].type << ")." << i << j << endl;
@@ -403,6 +405,7 @@ VOID instrument_itypes(INS ins, VOID* v){
 			}
 		}
 	}
+	
 
 	// count instruction that don't fit in any of the specified categories in the last group
 	if( !categorized ){
@@ -444,7 +447,7 @@ VOID fini_itypes(INT32 code, VOID* v){
 		output_file_itypes.open(mkfilename("itypes_full_int"), ios::out|ios::trunc);
 		output_file_itypes << total_ins_count_for_hpc_alignment << " " << total_ins_count;
 		for(i=0; i < number_of_groups; i++){
-			output_file_itypes << " " << group_counts[i];
+			output_file_itypes << "," << group_counts[i];
 		}
 		output_file_itypes << endl;
 	}
@@ -452,7 +455,7 @@ VOID fini_itypes(INT32 code, VOID* v){
 		output_file_itypes.open(mkfilename("itypes_phases_int"), ios::out|ios::app);
 		output_file_itypes << interval_ins_count;
 		for(i=0; i < number_of_groups+1; i++){
-			output_file_itypes << " " << group_counts[i];
+			output_file_itypes << "," << group_counts[i];
 		}
 		output_file_itypes << endl;
 	}
