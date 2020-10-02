@@ -72,7 +72,7 @@ VOID itypes_count(UINT32 gid){
 // initialize default groups
 VOID init_itypes_default_groups(){
 
-	number_of_groups = 19;
+	number_of_groups = 20;
 
 	group_identifiers = (identifier**)checked_malloc((number_of_groups+1)*sizeof(identifier*));
 	group_ids_cnt = (INT64*)checked_malloc((number_of_groups+1)*sizeof(INT64));
@@ -353,6 +353,11 @@ VOID init_itypes_default_groups(){
 	group_identifiers[18][9].str = checked_strdup("VPINSRD");
 	group_identifiers[18][10].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[18][10].str = checked_strdup("VBLENDVPD");
+
+	group_ids_cnt[19] = 1;
+	group_identifiers[19] = (identifier*)checked_malloc(group_ids_cnt[19]*sizeof(identifier));
+	group_identifiers[19][0].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[19][0].str = checked_strdup("MOV");
 
 }
 
