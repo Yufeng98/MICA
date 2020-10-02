@@ -72,7 +72,7 @@ VOID itypes_count(UINT32 gid){
 // initialize default groups
 VOID init_itypes_default_groups(){
 
-	number_of_groups = 13;
+	number_of_groups = 19;
 
 	group_identifiers = (identifier**)checked_malloc((number_of_groups+1)*sizeof(identifier*));
 	group_ids_cnt = (INT64*)checked_malloc((number_of_groups+1)*sizeof(INT64));
