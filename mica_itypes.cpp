@@ -430,6 +430,27 @@ VOID instrument_itypes(INS ins, VOID* v){
 		}
 	}
 
+	if( strcmp(checked_strdup("AVX"), cat) == 0 || strcmp(checked_strdup("AVX2"), cat) == 0 || strcmp(checked_strdup("SSE"), cat) == 0 || strcmp(checked_strdup("MMX"), cat) == 0){
+		// check whether this category is already known in the 'other' group
+		for(i=0; i < other_ids_cnt; i++){
+			if(strcmp(other_group_identifiers[i].str, opcode) == 0)
+				break;
+		}
+
+		// if a new instruction category is found, add it to the set
+		if(i == other_ids_cnt){
+			other_group_identifiers[other_ids_cnt].type = identifier_type::ID_TYPE_OPCODE;
+			other_group_identifiers[other_ids_cnt].str = checked_strdup(opcode);
+			other_ids_cnt++;
+		}
+
+		// prepare for (possible) next category
+		if(other_ids_cnt >= other_ids_max_cnt){
+			other_ids_max_cnt *= 2;
+			other_group_identifiers = (identifier*)checked_realloc(other_group_identifiers, other_ids_max_cnt*sizeof(identifier));
+		}
+	}
+
 	/* inserting calls for counting instructions is done in mica.cpp */
 	if(interval_size != -1){
 		INS_InsertIfCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_instr_intervals,IARG_END);
