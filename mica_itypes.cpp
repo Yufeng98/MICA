@@ -534,14 +534,14 @@ VOID instrument_itypes(INS ins, VOID* v){
 					if(group_identifiers[i][j].type == identifier_type::ID_TYPE_SPECIAL){
 						if(strcmp(group_identifiers[i][j].str, "mem_read") == 0 && INS_IsMemoryRead(ins) && strcmp(group_identifiers[12][0].str, cat) == 0){
 							INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
-							cout << "MemoryRead: " << cat << "\n";
+							// cout << "MemoryRead: " << cat << "\n";
 							categorized = true;
 							break;
 						}
 						else{
 							if(strcmp(group_identifiers[i][j].str, "mem_write") == 0 && INS_IsMemoryWrite(ins) && strcmp(group_identifiers[12][0].str, cat) == 0){
 								INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
-								cout << "MemoryWite: " << cat << "\n";
+								// cout << "MemoryWite: " << cat << "\n";
 								categorized = true;
 								break;
 							}
@@ -556,7 +556,7 @@ VOID instrument_itypes(INS ins, VOID* v){
 								}
 								if(flag==0)
 								    INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
-								cout << "Reg_transfer: " << cat << "\n";
+								// cout << "Reg_transfer: " << cat << "\n";
 							}
 							else{
 							}
