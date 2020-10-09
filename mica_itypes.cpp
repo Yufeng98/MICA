@@ -501,7 +501,10 @@ VOID init_itypes(){
 		output_file_itypes.close();
 	}
 }
-
+VOID your_analysis_function(VOID * ip)
+{
+	out << "ip:" << ip << endl;
+}   
 /* instrumenting (instruction level) */
 VOID instrument_itypes(INS ins, VOID* v){
 
@@ -514,16 +517,12 @@ VOID instrument_itypes(INS ins, VOID* v){
 	// printf("opcode: %s\n", opcode)
 	BOOL categorized = false;
 
-	void disasmIns(ADDRINT tid, ADDRINT insarg) {
-		ins.q_set(insarg);
-		std::cout << "Disassembly: " << INS_Disassemble(ins) << std::endl;
-	}
-
 	// go over all groups, increase group count if instruction matches that group
 	// group counts are increased at most once per instruction executed,
 	// even if the instruction matches multiple identifiers in that group
 	if (strcmp(group_identifiers[12][0].str, cat) == 0) {
-		INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)disasmIns, IARG_FAST_ANALYSIS_CALL, IARG_ADDRINT, ins.q(), IARG_END);
+		INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)your_analysis_function,
+        IARG_INST_PTR, IARG_REG_VALUE, IARG_END);
 	}
 
 
