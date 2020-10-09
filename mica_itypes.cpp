@@ -73,7 +73,7 @@ VOID itypes_count(UINT32 gid){
 // initialize default groups
 VOID init_itypes_default_groups(){
 
-	number_of_groups = 26;
+	number_of_groups = 22;
 
 	group_identifiers = (identifier**)checked_malloc((number_of_groups+1)*sizeof(identifier*));
 	group_ids_cnt = (INT64*)checked_malloc((number_of_groups+1)*sizeof(INT64));
@@ -209,7 +209,7 @@ VOID init_itypes_default_groups(){
 	group_identifiers[12][0].str = checked_strdup("DATAXFER");
 
 	// Vector computation
-	group_ids_cnt[13] = 27;
+	group_ids_cnt[13] = 37;
 	group_identifiers[13] = (identifier*)checked_malloc(group_ids_cnt[13]*sizeof(identifier));
 	group_identifiers[13][0].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[13][0].str = checked_strdup("MULSD");
@@ -265,9 +265,29 @@ VOID init_itypes_default_groups(){
 	group_identifiers[13][25].str = checked_strdup("PADDQ");
 	group_identifiers[13][26].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[13][26].str = checked_strdup("PMULUDQ");
+	group_identifiers[13][27].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][27].str = checked_strdup("PCMPEQB");
+	group_identifiers[13][28].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][28].str = checked_strdup("UCOMISD");
+	group_identifiers[13][29].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][29].str = checked_strdup("VUCOMISD");
+	group_identifiers[13][30].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][30].str = checked_strdup("UCOMISS");
+	group_identifiers[13][31].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][31].str = checked_strdup("PCMPISTRI");
+	group_identifiers[13][32].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][32].str = checked_strdup("PCMPGTD");
+	group_identifiers[13][33].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][33].str = checked_strdup("VPSUBW");
+	group_identifiers[13][34].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][34].str = checked_strdup("VPADDW");
+	group_identifiers[13][35].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][35].str = checked_strdup("VPMAXSW");
+	group_identifiers[13][36].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][36].str = checked_strdup("PMAXUB");
 
-	// Interleave
-	group_ids_cnt[14] = 5;
+	// Vector Other
+	group_ids_cnt[14] = 14;
 	group_identifiers[14] = (identifier*)checked_malloc(group_ids_cnt[14]*sizeof(identifier));
 	group_identifiers[14][0].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[14][0].str = checked_strdup("PUNPCKLBW");
@@ -284,97 +304,81 @@ VOID init_itypes_default_groups(){
 	group_identifiers[14][4].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[14][4].str = checked_strdup("PUNPCKHDQ");
 	// Unpack and interleave high-order doublewords from xmm1 and xmm2/m128 into xmm1.
+	group_identifiers[14][5].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][5].str = checked_strdup("PSHUFD");
+	group_identifiers[14][6].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][6].str = checked_strdup("SHUFPS");
+	group_identifiers[14][7].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][7].str = checked_strdup("VSHUFPS");
+	group_identifiers[14][8].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][8].str = checked_strdup("PMOVMSKB");
+	group_identifiers[14][9].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][9].str = checked_strdup("STMXCSR");
+	group_identifiers[14][10].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][10].str = checked_strdup("LDMXCSR");
+	group_identifiers[14][11].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][11].str = checked_strdup("VBLENDVPS");
+	group_identifiers[14][12].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][12].str = checked_strdup("VBLENDVPD");
+	group_identifiers[14][13].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][13].str = checked_strdup("VZEROUPPER");
 
-	// Compare
+	// Shift
 	group_ids_cnt[15] = 6;
 	group_identifiers[15] = (identifier*)checked_malloc(group_ids_cnt[15]*sizeof(identifier));
 	group_identifiers[15][0].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[15][0].str = checked_strdup("PCMPEQB");
+	group_identifiers[15][0].str = checked_strdup("VPSLLQ");
 	group_identifiers[15][1].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[15][1].str = checked_strdup("UCOMISD");
+	group_identifiers[15][1].str = checked_strdup("PSRLDQ");
 	group_identifiers[15][2].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[15][2].str = checked_strdup("VUCOMISD");
+	group_identifiers[15][2].str = checked_strdup("VPSRLDQ");
 	group_identifiers[15][3].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[15][3].str = checked_strdup("UCOMISS");
+	group_identifiers[15][3].str = checked_strdup("VPSLLDQ");
 	group_identifiers[15][4].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[15][4].str = checked_strdup("PCMPISTRI");
+	group_identifiers[15][4].str = checked_strdup("VPSLLD");
 	group_identifiers[15][5].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[15][5].str = checked_strdup("PCMPGTD");
+	group_identifiers[15][5].str = checked_strdup("PSRLQ");
 
-	// Shift
-	group_ids_cnt[16] = 6;
+	// Insert
+	group_ids_cnt[16] = 4;
 	group_identifiers[16] = (identifier*)checked_malloc(group_ids_cnt[16]*sizeof(identifier));
 	group_identifiers[16][0].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[16][0].str = checked_strdup("VPSLLQ");
+	group_identifiers[16][0].str = checked_strdup("VINSERTF128");
 	group_identifiers[16][1].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[16][1].str = checked_strdup("PSRLDQ");
+	group_identifiers[16][1].str = checked_strdup("VINSERTPS");
 	group_identifiers[16][2].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[16][2].str = checked_strdup("VPSRLDQ");
+	group_identifiers[16][2].str = checked_strdup("VPINSRD");
 	group_identifiers[16][3].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[16][3].str = checked_strdup("VPSLLDQ");
-	group_identifiers[16][4].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[16][4].str = checked_strdup("VPSLLD");
-	group_identifiers[16][5].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[16][5].str = checked_strdup("PSRLQ");
+	group_identifiers[16][3].str = checked_strdup("VINSERTI128");
 
-	// Shuffle
-	group_ids_cnt[17] = 3;
+	group_ids_cnt[17] = 1;
 	group_identifiers[17] = (identifier*)checked_malloc(group_ids_cnt[17]*sizeof(identifier));
 	group_identifiers[17][0].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[17][0].str = checked_strdup("PSHUFD");
-	group_identifiers[17][1].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[17][1].str = checked_strdup("SHUFPS");
-	group_identifiers[17][2].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[17][2].str = checked_strdup("VSHUFPS");
+	group_identifiers[17][0].str = checked_strdup("VEXTRACTF128");
 
-	// Other
 	group_ids_cnt[18] = 1;
 	group_identifiers[18] = (identifier*)checked_malloc(group_ids_cnt[18]*sizeof(identifier));
-	group_identifiers[18][0].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[18][0].str = checked_strdup("PMOVMSKB");
+	group_identifiers[18][0].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[18][0].str = checked_strdup("SETCC");
 
-	group_ids_cnt[19] = 2;
+	group_ids_cnt[19] = 1;
 	group_identifiers[19] = (identifier*)checked_malloc(group_ids_cnt[19]*sizeof(identifier));
-	group_identifiers[19][0].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[19][0].str = checked_strdup("STMXCSR");
-	group_identifiers[19][1].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[19][1].str = checked_strdup("LDMXCSR");
+	group_identifiers[19][0].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[19][0].str = checked_strdup("VPERM2I128");
 
 	group_ids_cnt[20] = 1;
 	group_identifiers[20] = (identifier*)checked_malloc(group_ids_cnt[20]*sizeof(identifier));
-	group_identifiers[20][0].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[20][0].str = checked_strdup("PALIGNR");
+	group_identifiers[20][0].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[20][0].str = checked_strdup("BMI1");
 
-	group_ids_cnt[21] = 3;
-	group_identifiers[21] = (identifier*)checked_malloc(group_ids_cnt[21]*sizeof(identifier));
+	group_ids_cnt[21] = 2;
+	group_identifiers[21] = (identifier*)checked_malloc(group_ids_cnt[12]*sizeof(identifier));
 	group_identifiers[21][0].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[21][0].str = checked_strdup("VINSERTF128");
+	group_identifiers[21][0].str = checked_strdup("PALIGNR");
 	group_identifiers[21][1].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[21][1].str = checked_strdup("VINSERTPS");
-	group_identifiers[21][2].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[21][2].str = checked_strdup("VPINSRD");
-
-	group_ids_cnt[22] = 2;
-	group_identifiers[22] = (identifier*)checked_malloc(group_ids_cnt[22]*sizeof(identifier));
-	group_identifiers[22][0].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[22][0].str = checked_strdup("VBLENDVPS");
-	group_identifiers[22][1].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[22][1].str = checked_strdup("VBLENDVPD");
-
-	group_ids_cnt[23] = 1;
-	group_identifiers[23] = (identifier*)checked_malloc(group_ids_cnt[23]*sizeof(identifier));
-	group_identifiers[23][0].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[23][0].str = checked_strdup("VEXTRACTF128");
-
-	group_ids_cnt[24] = 1;
-	group_identifiers[24] = (identifier*)checked_malloc(group_ids_cnt[24]*sizeof(identifier));
-	group_identifiers[24][0].type = identifier_type::ID_TYPE_OPCODE;
-	group_identifiers[24][0].str = checked_strdup("VZEROUPPER");
-
-	group_ids_cnt[25] = 1;
-	group_identifiers[25] = (identifier*)checked_malloc(group_ids_cnt[25]*sizeof(identifier));
-	group_identifiers[25][0].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[25][0].str = checked_strdup("SETCC");
+	group_identifiers[21][1].str = checked_strdup("VPALIGNR");
+	// group_identifiers[16][2].type = identifier_type::ID_TYPE_OPCODE;
+	// group_identifiers[16][2].str = checked_strdup("VPINSRD");
 
 
 }
@@ -501,10 +505,6 @@ VOID init_itypes(){
 		output_file_itypes.close();
 	}
 }
-VOID your_analysis_function(VOID * ip)
-{
-	std::cout << "ip:" << ip << std::endl;
-}   
 /* instrumenting (instruction level) */
 VOID instrument_itypes(INS ins, VOID* v){
 
@@ -520,11 +520,6 @@ VOID instrument_itypes(INS ins, VOID* v){
 	// go over all groups, increase group count if instruction matches that group
 	// group counts are increased at most once per instruction executed,
 	// even if the instruction matches multiple identifiers in that group
-	if (strcmp(group_identifiers[12][0].str, cat) == 0) {
-		INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)your_analysis_function,
-        IARG_INST_PTR, IARG_REG_VALUE, IARG_END);
-	}
-
 
 	for(i=0; i < number_of_groups; i++){
 		for(j=0; j < group_ids_cnt[i]; j++){
