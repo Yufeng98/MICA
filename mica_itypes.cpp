@@ -503,7 +503,7 @@ VOID init_itypes(){
 }
 VOID your_analysis_function(VOID * ip)
 {
-	out << "ip:" << ip << endl;
+	std::cout << "ip:" << ip << std::endl;
 }   
 /* instrumenting (instruction level) */
 VOID instrument_itypes(INS ins, VOID* v){
