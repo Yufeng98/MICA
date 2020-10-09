@@ -504,10 +504,13 @@ VOID instrument_itypes(INS ins, VOID* v){
 	int i,j;
 	char cat[50];
 	char opcode[50];
+	char instr[100];
+	strcpy(instr,ins.c_str());
 	strcpy(cat,CATEGORY_StringShort(INS_Category(ins)).c_str());
 	strcpy(opcode,INS_Mnemonic(ins).c_str());
 	// printf("cat: %s\n", cat);
-	// printf("opcode: %s\n", opcode);
+	// printf("opcode: %s\n", opcode)
+	printf("instr: %s\n", instr);
 	BOOL categorized = false;
 
 	// go over all groups, increase group count if instruction matches that group
