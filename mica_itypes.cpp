@@ -12,6 +12,7 @@
 /* MICA includes */
 #include "mica_utils.h"
 #include "mica_itypes.h"
+#include <string>
 #include <map>
 
 /* Global variables */
@@ -69,10 +70,14 @@ VOID itypes_count(UINT32 gid){
 	group_counts[gid]++;
 };
 
+VOID DisplayInstruction(ADDRINT instructionAddress,string assemblyCode){
+ cout<<std::hex<<instructionAddress<<":"<<std::dec<<assemblyCode<<"\n";
+}
+
 // initialize default groups
 VOID init_itypes_default_groups(){
 
-	number_of_groups = 25;
+	number_of_groups = 26;
 
 	group_identifiers = (identifier**)checked_malloc((number_of_groups+1)*sizeof(identifier*));
 	group_ids_cnt = (INT64*)checked_malloc((number_of_groups+1)*sizeof(INT64));
@@ -202,12 +207,10 @@ VOID init_itypes_default_groups(){
 	group_identifiers[11][0].str = checked_strdup("reg_transfer");
 
 	// DATAXFER
-	group_ids_cnt[12] = 2;
+	group_ids_cnt[12] = 1;
 	group_identifiers[12] = (identifier*)checked_malloc(group_ids_cnt[12]*sizeof(identifier));
 	group_identifiers[12][0].type = identifier_type::ID_TYPE_CATEGORY;
 	group_identifiers[12][0].str = checked_strdup("DATAXFER");
-	group_identifiers[12][1].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[12][1].str = checked_strdup("SETCC");
 
 	// Vector computation
 	group_ids_cnt[13] = 27;
@@ -372,6 +375,11 @@ VOID init_itypes_default_groups(){
 	group_identifiers[24][0].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[24][0].str = checked_strdup("VZEROUPPER");
 
+	group_ids_cnt[25] = 1;
+	group_identifiers[25] = (identifier*)checked_malloc(group_ids_cnt[25]*sizeof(identifier));
+	group_identifiers[25][0].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[25][0].str = checked_strdup("SETCC");
+
 
 }
 
@@ -504,18 +512,21 @@ VOID instrument_itypes(INS ins, VOID* v){
 	int i,j;
 	char cat[50];
 	char opcode[50];
-	char instr[100];
-	strcpy(instr,ins.c_str());
 	strcpy(cat,CATEGORY_StringShort(INS_Category(ins)).c_str());
 	strcpy(opcode,INS_Mnemonic(ins).c_str());
 	// printf("cat: %s\n", cat);
 	// printf("opcode: %s\n", opcode)
-	printf("instr: %s\n", instr);
 	BOOL categorized = false;
 
 	// go over all groups, increase group count if instruction matches that group
 	// group counts are increased at most once per instruction executed,
 	// even if the instruction matches multiple identifiers in that group
+	if (strcmp(group_identifiers[12][0].str, cat) == 0) {
+		INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)DisplayInstruction,
+    IARG_INST_PTR, IARG_REG_VALUE,new string(INS_Assemble(ins)), IARG_END);
+	}
+
+
 	for(i=0; i < number_of_groups; i++){
 		for(j=0; j < group_ids_cnt[i]; j++){
 			if(group_identifiers[i][j].type == identifier_type::ID_TYPE_CATEGORY){
