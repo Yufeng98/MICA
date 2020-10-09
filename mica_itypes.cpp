@@ -70,10 +70,6 @@ VOID itypes_count(UINT32 gid){
 	group_counts[gid]++;
 };
 
-VOID DisplayInstruction(ADDRINT instructionAddress,string assemblyCode){
- cout<<std::hex<<instructionAddress<<":"<<std::dec<<assemblyCode<<"\n";
-}
-
 // initialize default groups
 VOID init_itypes_default_groups(){
 
@@ -506,6 +502,13 @@ VOID init_itypes(){
 	}
 }
 
+void disasmIns(ADDRINT tid, ADDRINT insarg)
+{
+  INS ins;
+  ins.q_set(insarg);
+  std::cout << "Disassembly: " << INS_Disassemble(ins) << std::endl;
+}
+
 /* instrumenting (instruction level) */
 VOID instrument_itypes(INS ins, VOID* v){
 
@@ -522,8 +525,7 @@ VOID instrument_itypes(INS ins, VOID* v){
 	// group counts are increased at most once per instruction executed,
 	// even if the instruction matches multiple identifiers in that group
 	if (strcmp(group_identifiers[12][0].str, cat) == 0) {
-		INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)DisplayInstruction,
-    IARG_INST_PTR, IARG_REG_VALUE,new string(INS_Assemble(ins)), IARG_END);
+		INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)disasmIns, IARG_FAST_ANALYSIS_CALL, IARG_ADDRINT, ins.q(), IARG_END);
 	}
 
 
