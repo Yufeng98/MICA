@@ -502,13 +502,6 @@ VOID init_itypes(){
 	}
 }
 
-void disasmIns(ADDRINT tid, ADDRINT insarg)
-{
-  INS ins;
-  ins.q_set(insarg);
-  std::cout << "Disassembly: " << INS_Disassemble(ins) << std::endl;
-}
-
 /* instrumenting (instruction level) */
 VOID instrument_itypes(INS ins, VOID* v){
 
@@ -520,6 +513,11 @@ VOID instrument_itypes(INS ins, VOID* v){
 	// printf("cat: %s\n", cat);
 	// printf("opcode: %s\n", opcode)
 	BOOL categorized = false;
+
+	void disasmIns(ADDRINT tid, ADDRINT insarg) {
+		ins.q_set(insarg);
+		std::cout << "Disassembly: " << INS_Disassemble(ins) << std::endl;
+	}
 
 	// go over all groups, increase group count if instruction matches that group
 	// group counts are increased at most once per instruction executed,
