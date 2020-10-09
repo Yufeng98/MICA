@@ -372,7 +372,7 @@ VOID init_itypes_default_groups(){
 	group_identifiers[20][0].str = checked_strdup("BMI1");
 
 	group_ids_cnt[21] = 2;
-	group_identifiers[21] = (identifier*)checked_malloc(group_ids_cnt[12]*sizeof(identifier));
+	group_identifiers[21] = (identifier*)checked_malloc(group_ids_cnt[21]*sizeof(identifier));
 	group_identifiers[21][0].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[21][0].str = checked_strdup("PALIGNR");
 	group_identifiers[21][1].type = identifier_type::ID_TYPE_OPCODE;
