@@ -13,6 +13,7 @@
 #include "mica_utils.h"
 #include "mica_itypes.h"
 #include <string>
+#include <iostream>
 #include <map>
 
 /* Global variables */
@@ -163,7 +164,7 @@ VOID init_itypes_default_groups(){
 	group_identifiers[8][3].str = checked_strdup("AVX");
 
 	// other (interrupts, rotate instructions, semaphore, conditional move, system)
-	group_ids_cnt[9] = 11;
+	group_ids_cnt[9] = 12;
 	group_identifiers[9] = (identifier*)checked_malloc(group_ids_cnt[9]*sizeof(identifier));
 	group_identifiers[9][0].type = identifier_type::ID_TYPE_CATEGORY;
 	group_identifiers[9][0].str = checked_strdup("INTERRUPT");
@@ -187,6 +188,8 @@ VOID init_itypes_default_groups(){
 	group_identifiers[9][9].str = checked_strdup("XSAVE");
 	group_identifiers[9][10].type = identifier_type::ID_TYPE_CATEGORY;
 	group_identifiers[9][10].str = checked_strdup("BROADCAST");
+	group_identifiers[9][11].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[9][11].str = checked_strdup("FXSAVE");
 
 	// [!] NOP instructions
 	group_ids_cnt[10] = 2;
@@ -203,10 +206,12 @@ VOID init_itypes_default_groups(){
 	group_identifiers[11][0].str = checked_strdup("reg_transfer");
 
 	// DATAXFER
-	group_ids_cnt[12] = 1;
+	group_ids_cnt[12] = 2;
 	group_identifiers[12] = (identifier*)checked_malloc(group_ids_cnt[12]*sizeof(identifier));
 	group_identifiers[12][0].type = identifier_type::ID_TYPE_CATEGORY;
 	group_identifiers[12][0].str = checked_strdup("DATAXFER");
+	group_identifiers[12][1].type = identifier_type::ID_TYPE_CATEGORY;
+	group_identifiers[12][1].str = checked_strdup("SETCC");
 
 	// Vector computation
 	group_ids_cnt[13] = 37;
@@ -287,7 +292,7 @@ VOID init_itypes_default_groups(){
 	group_identifiers[13][36].str = checked_strdup("PMAXUB");
 
 	// Vector Other
-	group_ids_cnt[14] = 20;
+	group_ids_cnt[14] = 23;
 	group_identifiers[14] = (identifier*)checked_malloc(group_ids_cnt[14]*sizeof(identifier));
 	group_identifiers[14][0].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[14][0].str = checked_strdup("PUNPCKLBW");
@@ -334,6 +339,12 @@ VOID init_itypes_default_groups(){
 	group_identifiers[14][18].str = checked_strdup("POPCNT");
 	group_identifiers[14][19].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[14][19].str = checked_strdup("BMI1");
+	group_identifiers[14][20].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][20].str = checked_strdup("VLDMXCSR");
+	group_identifiers[14][21].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][21].str = checked_strdup("VPUNPCKLQDQ");
+	group_identifiers[14][22].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][22].str = checked_strdup("VPUNPCKHQDQ");
 
 	// Shift
 	group_ids_cnt[15] = 7;
@@ -519,17 +530,21 @@ VOID instrument_itypes(INS ins, VOID* v){
 	char opcode[50];
 	strcpy(cat,CATEGORY_StringShort(INS_Category(ins)).c_str());
 	strcpy(opcode,INS_Mnemonic(ins).c_str());
+	// std::cout << INS_Disassemble(ins) << std::endl;
 	// printf("cat: %s\n", cat);
 	// printf("opcode: %s\n", opcode);
-	BOOL categorized = false;
+	bool categorized = false;
 	bool opcoded = false;
-
+	bool is_special = false;
+	int double_special = 0;
 	// go over all groups, increase group count if instruction matches that group
 	// group counts are increased at most once per instruction executed,
 	// even if the instruction matches multiple identifiers in that group
 
 	for(i=0; i < number_of_groups; i++){
+		// if (i > 1) continue;
 		for(j=0; j < group_ids_cnt[i]; j++){
+			
 			if(group_identifiers[i][j].type == identifier_type::ID_TYPE_CATEGORY){
 				if(strcmp(group_identifiers[i][j].str, cat) == 0){
 					INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
@@ -548,31 +563,44 @@ VOID instrument_itypes(INS ins, VOID* v){
 				}
 				else{
 					if(group_identifiers[i][j].type == identifier_type::ID_TYPE_SPECIAL){
-						if(strcmp(group_identifiers[i][j].str, "mem_read") == 0 && INS_IsMemoryRead(ins) && strcmp(group_identifiers[12][0].str, cat) == 0){
+						if(strcmp(group_identifiers[i][j].str, "mem_read") == 0 && INS_IsMemoryRead(ins) && strcmp(group_identifiers[12][0].str, cat) == 0 && strcmp(checked_strdup("MOV"), opcode) == 0){
+							double_special++;
+							if (double_special > 1) continue;
 							INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
-							// cout << "MemoryRead: " << cat << "\n";
 							categorized = true;
+							is_special = true;
 							break;
 						}
 						else{
-							if(strcmp(group_identifiers[i][j].str, "mem_write") == 0 && INS_IsMemoryWrite(ins) && strcmp(group_identifiers[12][0].str, cat) == 0){
+							if(strcmp(group_identifiers[i][j].str, "mem_write") == 0 && INS_IsMemoryWrite(ins) && strcmp(group_identifiers[12][0].str, cat) == 0 && strcmp(checked_strdup("MOV"), opcode) == 0){
+								double_special++;
+								if (double_special > 1) continue;
 								INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
-								// cout << "MemoryWite: " << cat << "\n";
+								// std::cout << INS_Disassemble(ins) << std::endl;
 								categorized = true;
+								is_special = true;
 								break;
 							}
 							else if(strcmp(group_identifiers[i][j].str, "reg_transfer") == 0 && INS_IsMov(ins) && strcmp(group_identifiers[12][0].str, cat) == 0){
-								UINT32 flag=0,n;
-								n=INS_OperandCount(ins);
-								for(UINT32 i=0;i<n;i++){
-								    if(!INS_OperandIsReg(ins,i)){
-										flag=1;
-										break;
-								    }
-								}
-								if(flag==0)
-								    INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
-								// cout << "Reg_transfer: " << cat << "\n";
+								double_special++;
+								if (double_special > 1) continue;
+								INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
+								categorized = true;
+								// UINT32 flag=0,n;
+								// n=INS_OperandCount(ins);
+								// for(UINT32 i=0;i<n;i++){
+								//     if(!INS_OperandIsReg(ins,i)){
+								// 		flag=1;
+								// 		break;
+								//     }
+								// }
+								// if(flag==0) {
+								//     INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
+								// 	std::cout << INS_Disassemble(ins) << std::endl;
+								// 	double_special++;
+								// 	// is_special = true;
+								// }
+								is_special = true;
 							}
 							else{
 							}
@@ -583,6 +611,27 @@ VOID instrument_itypes(INS ins, VOID* v){
 					}
 				}
 			}
+		}
+	}
+
+	if (strcmp(group_identifiers[12][0].str, cat) == 0 && !is_special) {
+		// std::cout << INS_Disassemble(ins) << std::endl;
+		for(i=0; i < other_ids_cnt; i++){
+			if(strcmp(other_group_identifiers[i].str, opcode) == 0)
+				break;
+		}
+
+		// if a new instruction category is found, add it to the set
+		if(i == other_ids_cnt){
+			other_group_identifiers[other_ids_cnt].type = identifier_type::ID_TYPE_OPCODE;
+			other_group_identifiers[other_ids_cnt].str = checked_strdup(opcode);
+			other_ids_cnt++;
+		}
+
+		// prepare for (possible) next category
+		if(other_ids_cnt >= other_ids_max_cnt){
+			other_ids_max_cnt *= 2;
+			other_group_identifiers = (identifier*)checked_realloc(other_group_identifiers, other_ids_max_cnt*sizeof(identifier));
 		}
 	}
 	
