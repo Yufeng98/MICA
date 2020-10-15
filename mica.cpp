@@ -68,7 +68,7 @@ int append_pid;
 
 /* helper */
 int thread_count = 0;
-
+FILE * trace;
 const CHAR * ROI_BEGIN = "__parsec_roi_begin";
 const CHAR * ROI_END = "__parsec_roi_end";
 bool isROI = false;
@@ -534,11 +534,13 @@ VOID Routine(RTN rtn, VOID *v)
     const CHAR * name = RTN_Name(rtn).c_str();
 
     if(strcmp(name,ROI_BEGIN) == 0) {
+		fprintf(trace,"Routine: %s\n",name);
         // Start tracing after ROI begin exec
         RTN_Open(rtn);
         RTN_InsertCall(rtn, IPOINT_AFTER, (AFUNPTR)StartROI, IARG_END);
         RTN_Close(rtn);
     } else if (strcmp(name,ROI_END) == 0) {
+		fprintf(trace,"Routine: %s\n",name);
         // Stop tracing before ROI end exec
         RTN_Open(rtn);
         RTN_InsertCall(rtn, IPOINT_BEFORE, (AFUNPTR)StopROI, IARG_END);
@@ -554,6 +556,8 @@ int main(int argc, char* argv[]){
 
 	int i;
 	MODE mode;
+	
+	trace = fopen("roitrace.csv", "w");
 
 	setup_mica_log(&_log);
 
@@ -591,6 +595,7 @@ int main(int argc, char* argv[]){
 			break;
 		case MODE_ITYPES:
 			init_itypes();
+			PIN_InitSymbols();
 			PIN_Init(argc, argv);
 			RTN_AddInstrumentFunction(Routine, 0);
 			INS_AddInstrumentFunction(Instruction_itypes_only, 0);

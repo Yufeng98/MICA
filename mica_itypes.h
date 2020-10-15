@@ -23,7 +23,7 @@ typedef struct identifier_type{
 VOID init_itypes();
 VOID init_itypes_default_groups();
 
-VOID instrument_itypes(INS ins, VOID* v);
+VOID instrument_itypes(INS ins, VOID* v, bool is_ROI);
 VOID instrument_itypes_bbl(TRACE trace, VOID* v);
 VOID fini_itypes(INT32 code, VOID* v);
 
