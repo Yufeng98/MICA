@@ -523,8 +523,8 @@ VOID init_itypes(){
 	}
 }
 /* instrumenting (instruction level) */
-VOID instrument_itypes(INS ins, VOID* v){
-
+VOID instrument_itypes(INS ins, VOID* v, bool is_ROI){
+	if (!is_ROI) return;
 	int i,j;
 	char cat[50];
 	char opcode[50];
