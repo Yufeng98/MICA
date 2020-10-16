@@ -214,7 +214,7 @@ VOID init_itypes_default_groups(){
 	group_identifiers[12][1].str = checked_strdup("SETCC");
 
 	// Vector computation
-	group_ids_cnt[13] = 37;
+	group_ids_cnt[13] = 45;
 	group_identifiers[13] = (identifier*)checked_malloc(group_ids_cnt[13]*sizeof(identifier));
 	group_identifiers[13][0].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[13][0].str = checked_strdup("MULSD");
@@ -290,9 +290,25 @@ VOID init_itypes_default_groups(){
 	group_identifiers[13][35].str = checked_strdup("VPMAXSW");
 	group_identifiers[13][36].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[13][36].str = checked_strdup("PMAXUB");
+	group_identifiers[13][37].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][37].str = checked_strdup("VPMAXUW");
+	group_identifiers[13][38].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][38].str = checked_strdup("VPMINSW");
+	group_identifiers[13][39].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][39].str = checked_strdup("VPABSW");
+	group_identifiers[13][40].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][40].str = checked_strdup("VPCMPEQW");
+	group_identifiers[13][41].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][41].str = checked_strdup("VPCMPEQD");
+	group_identifiers[13][42].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][42].str = checked_strdup("VPMINUW");
+	group_identifiers[13][43].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][43].str = checked_strdup("VPCMPGTW");
+	group_identifiers[13][44].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][44].str = checked_strdup("VPADDB");
 
 	// Vector Other
-	group_ids_cnt[14] = 23;
+	group_ids_cnt[14] = 24;
 	group_identifiers[14] = (identifier*)checked_malloc(group_ids_cnt[14]*sizeof(identifier));
 	group_identifiers[14][0].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[14][0].str = checked_strdup("PUNPCKLBW");
@@ -345,6 +361,8 @@ VOID init_itypes_default_groups(){
 	group_identifiers[14][21].str = checked_strdup("VPUNPCKLQDQ");
 	group_identifiers[14][22].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[14][22].str = checked_strdup("VPUNPCKHQDQ");
+	group_identifiers[14][23].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][23].str = checked_strdup("VPBLENDVB");
 
 	// Shift
 	group_ids_cnt[15] = 7;
@@ -376,10 +394,12 @@ VOID init_itypes_default_groups(){
 	group_identifiers[16][3].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[16][3].str = checked_strdup("VINSERTI128");
 
-	group_ids_cnt[17] = 1;
+	group_ids_cnt[17] = 2;
 	group_identifiers[17] = (identifier*)checked_malloc(group_ids_cnt[17]*sizeof(identifier));
 	group_identifiers[17][0].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[17][0].str = checked_strdup("VEXTRACTF128");
+	group_identifiers[17][1].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[17][1].str = checked_strdup("VEXTRACTI128");
 
 	group_ids_cnt[18] = 1;
 	group_identifiers[18] = (identifier*)checked_malloc(group_ids_cnt[18]*sizeof(identifier));
@@ -524,7 +544,7 @@ VOID init_itypes(){
 }
 /* instrumenting (instruction level) */
 VOID instrument_itypes(INS ins, VOID* v, bool is_ROI){
-	if (!is_ROI) return;
+	// if (!is_ROI) return;
 	int i,j;
 	char cat[50];
 	char opcode[50];
@@ -542,7 +562,7 @@ VOID instrument_itypes(INS ins, VOID* v, bool is_ROI){
 	// even if the instruction matches multiple identifiers in that group
 
 	for(i=0; i < number_of_groups; i++){
-		if (i > 1) continue;
+		// if (i > 1) continue;
 		for(j=0; j < group_ids_cnt[i]; j++){
 			
 			if(group_identifiers[i][j].type == identifier_type::ID_TYPE_CATEGORY){
@@ -563,7 +583,7 @@ VOID instrument_itypes(INS ins, VOID* v, bool is_ROI){
 				}
 				else{
 					if(group_identifiers[i][j].type == identifier_type::ID_TYPE_SPECIAL){
-						if(strcmp(group_identifiers[i][j].str, "mem_read") == 0 && INS_IsMemoryRead(ins) && strcmp(group_identifiers[12][0].str, cat) == 0 && strcmp(checked_strdup("MOV"), opcode) != 0){
+						if(strcmp(group_identifiers[i][j].str, "mem_read") == 0 && INS_IsMemoryRead(ins) && strcmp(group_identifiers[12][0].str, cat) == 0 && strcmp(checked_strdup("MOV"), opcode) == 0){
 							double_special++;
 							if (double_special > 1) continue;
 							INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
@@ -572,7 +592,7 @@ VOID instrument_itypes(INS ins, VOID* v, bool is_ROI){
 							break;
 						}
 						else{
-							if(strcmp(group_identifiers[i][j].str, "mem_write") == 0 && INS_IsMemoryWrite(ins) && strcmp(group_identifiers[12][0].str, cat) == 0 && strcmp(checked_strdup("MOV"), opcode) != 0){
+							if(strcmp(group_identifiers[i][j].str, "mem_write") == 0 && INS_IsMemoryWrite(ins) && strcmp(group_identifiers[12][0].str, cat) == 0 && strcmp(checked_strdup("MOV"), opcode) == 0){
 								double_special++;
 								if (double_special > 1) continue;
 								INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
