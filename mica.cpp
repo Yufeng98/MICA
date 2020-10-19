@@ -520,12 +520,14 @@ VOID ThreadStart(THREADID id, CONTEXT *context, INT32 flags, VOID *data)
 VOID StartROI()
 {
     isROI = true;
+	fprintf(trace, "startROI");
 }
 
 // Set ROI flag
 VOID StopROI()
 {
     isROI = false;
+	fprintf(trace, "endROI");
 }
 
 VOID Routine(RTN rtn, VOID *v)
