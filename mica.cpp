@@ -530,23 +530,25 @@ VOID StopROI()
 	fprintf(trace, "endROI");
 }
 
-VOID Routine(RTN rtn, VOID *v)
+static VOID Routine(RTN rtn, VOID *)
 {
     // Get routine name
     const CHAR * name = RTN_Name(rtn).c_str();
-
-    if(strcmp(name,ROI_BEGIN) == 0) {
-		fprintf(trace,"Routine: %s\n",name);
+    // fprintf(trace,"Routine: %s\n",name); 
+    if(RTN_Name(rtn).find(ROI_BEGIN) != std::string::npos) {
         // Start tracing after ROI begin exec
+        fprintf(trace,"Routine: %s\n",name);
         RTN_Open(rtn);
         RTN_InsertCall(rtn, IPOINT_AFTER, (AFUNPTR)StartROI, IARG_END);
         RTN_Close(rtn);
-    } else if (strcmp(name,ROI_END) == 0) {
-		fprintf(trace,"Routine: %s\n",name);
+        if (isROI) fprintf(trace,"true\n"); else fprintf(trace,"false\n");
+    } else if (RTN_Name(rtn).find(ROI_END) != std::string::npos) {
         // Stop tracing before ROI end exec
+        fprintf(trace,"Routine: %s\n",name);
         RTN_Open(rtn);
-        RTN_InsertCall(rtn, IPOINT_BEFORE, (AFUNPTR)StopROI, IARG_END);
+        RTN_InsertCall(rtn, IPOINT_AFTER, (AFUNPTR)StopROI, IARG_END);
         RTN_Close(rtn);
+        if (isROI) fprintf(trace,"true\n"); else fprintf(trace,"false\n");
     }
 }
 
