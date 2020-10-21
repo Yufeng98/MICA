@@ -15,7 +15,7 @@
 #include <string>
 #include <iostream>
 #include <map>
-
+using namespace std;
 /* Global variables */
 
 extern INT64 interval_size;
@@ -214,7 +214,7 @@ VOID init_itypes_default_groups(){
 	group_identifiers[12][1].str = checked_strdup("SETCC");
 
 	// Vector computation - ADD/SUB/MUL/DIV/CMP/MAX/MIN/ABS
-	group_ids_cnt[13] = 45;
+	group_ids_cnt[13] = 56;
 	group_identifiers[13] = (identifier*)checked_malloc(group_ids_cnt[13]*sizeof(identifier));
 	group_identifiers[13][0].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[13][0].str = checked_strdup("MULSD");
@@ -306,9 +306,32 @@ VOID init_itypes_default_groups(){
 	group_identifiers[13][43].str = checked_strdup("VPCMPGTW");
 	group_identifiers[13][44].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[13][44].str = checked_strdup("VPADDB");
+	group_identifiers[13][45].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][45].str = checked_strdup("COMISD");
+	group_identifiers[13][46].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][46].str = checked_strdup("PMINUB");
+	group_identifiers[13][47].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][47].str = checked_strdup("VPADDQ");
+	group_identifiers[13][48].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][48].str = checked_strdup("VPCMPEQB");
+	group_identifiers[13][49].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][49].str = checked_strdup("COMISS");
+	group_identifiers[13][50].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][50].str = checked_strdup("PCMPISTRM");
+	group_identifiers[13][51].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][51].str = checked_strdup("PMADDUBSW");
+	group_identifiers[13][52].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][52].str = checked_strdup("PMADDWD");
+	group_identifiers[13][53].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][53].str = checked_strdup("PMULLD");
+	group_identifiers[13][54].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][54].str = checked_strdup("PHADDD");
+	group_identifiers[13][55].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[13][55].str = checked_strdup("PCMPGTB");
+
 
 	// Vector Other
-	group_ids_cnt[14] = 21;
+	group_ids_cnt[14] = 25;
 	group_identifiers[14] = (identifier*)checked_malloc(group_ids_cnt[14]*sizeof(identifier));
 	group_identifiers[14][0].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[14][0].str = checked_strdup("PUNPCKLBW");
@@ -352,6 +375,14 @@ VOID init_itypes_default_groups(){
 	group_identifiers[14][19].str = checked_strdup("VPUNPCKLQDQ");
 	group_identifiers[14][20].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[14][20].str = checked_strdup("VPUNPCKHQDQ");
+	group_identifiers[14][21].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][21].str = checked_strdup("VPMOVSXBW");
+	group_identifiers[14][22].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][22].str = checked_strdup("VPMOVZXDQ");
+	group_identifiers[14][23].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][23].str = checked_strdup("VPMOVZXWD");
+	group_identifiers[14][24].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[14][24].str = checked_strdup("VPMOVZXBW");
 
 	// Shift
 	group_ids_cnt[15] = 7;
@@ -372,7 +403,7 @@ VOID init_itypes_default_groups(){
 	group_identifiers[15][6].str = checked_strdup("PSLLDQ");
 
 	// Insert
-	group_ids_cnt[16] = 4;
+	group_ids_cnt[16] = 5;
 	group_identifiers[16] = (identifier*)checked_malloc(group_ids_cnt[16]*sizeof(identifier));
 	group_identifiers[16][0].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[16][0].str = checked_strdup("VINSERTF128");
@@ -382,13 +413,19 @@ VOID init_itypes_default_groups(){
 	group_identifiers[16][2].str = checked_strdup("VPINSRD");
 	group_identifiers[16][3].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[16][3].str = checked_strdup("VINSERTI128");
+	group_identifiers[16][4].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[16][4].str = checked_strdup("VPINSRQ");
 
-	group_ids_cnt[17] = 2;
+	group_ids_cnt[17] = 4;
 	group_identifiers[17] = (identifier*)checked_malloc(group_ids_cnt[17]*sizeof(identifier));
 	group_identifiers[17][0].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[17][0].str = checked_strdup("VEXTRACTF128");
 	group_identifiers[17][1].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[17][1].str = checked_strdup("VEXTRACTI128");
+	group_identifiers[17][2].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[17][2].str = checked_strdup("VPEXTRW");
+	group_identifiers[17][3].type = identifier_type::ID_TYPE_OPCODE;
+	group_identifiers[17][3].str = checked_strdup("PEXTRD");
 
 	group_ids_cnt[18] = 1;
 	group_identifiers[18] = (identifier*)checked_malloc(group_ids_cnt[18]*sizeof(identifier));
@@ -537,10 +574,11 @@ VOID init_itypes(){
 }
 /* instrumenting (instruction level) */
 VOID instrument_itypes(INS ins, VOID* v, bool is_ROI){
-	if (!is_ROI) return;
+	// if (!is_ROI) return;
 	int i,j;
 	char cat[50];
 	char opcode[50];
+	string opcode_string = INS_Mnemonic(ins);
 	strcpy(cat,CATEGORY_StringShort(INS_Category(ins)).c_str());
 	strcpy(opcode,INS_Mnemonic(ins).c_str());
 	// std::cout << INS_Disassemble(ins) << std::endl;
