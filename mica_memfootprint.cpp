@@ -258,6 +258,7 @@ VOID instrument_memfootprint(INS ins, VOID* v){
 		INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)memOp, IARG_MEMORYREAD_EA, IARG_MEMORYREAD_SIZE, IARG_END);
 
 		if(INS_HasMemoryRead2(ins)){
+			std::cout << INS_Disassemble(ins) << std::endl;
 
 			INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)memOp, IARG_MEMORYREAD2_EA, IARG_MEMORYREAD_SIZE, IARG_END);
 		}
