@@ -119,13 +119,15 @@ VOID memOp(ADDRINT effMemAddr, ADDRINT size){
 
 		/* D-stream (64-byte) cache block memory footprint */
 
-		addr = effMemAddr >> memfootprint_block_size;
+		addr = effMemAddr >> memfootprint_block_size;	// memfootprint_block_size = 6, addr is the address of a cache line
 		endAddr = (effMemAddr + size - 1) >> memfootprint_block_size;
 
 		for(a = addr; a <= endAddr; a++){
 
-			upperAddr = a >> LOG_MAX_MEM_BLOCK;
-			indexInChunk = a ^ (upperAddr << LOG_MAX_MEM_BLOCK);
+			upperAddr = a >> LOG_MAX_MEM_BLOCK; // LOG_MAX_MEM_BLOCK = 16, upperAddr is the address of the chunk, containing 2^16 cache lines
+			indexInChunk = a ^ (upperAddr << LOG_MAX_MEM_BLOCK);	// indexInChunk is the last 16 bit of a
+			// std::cout << std::hex << "address: " << a << " upperAddr: " << upperAddr << " indexInChunk: " << indexInChunk << std::endl;
+			// a: 1fc2ab23959 -> upperAddr: 1fc2ab2 indexInChunk: 3959
 
 			chunk = lookup(DmemCacheWorkingSetTable, upperAddr);
 			if(chunk == (memNode*)NULL)
@@ -254,11 +256,11 @@ static VOID memfootprint_instr_interval(){
 VOID instrument_memfootprint(INS ins, VOID* v){
 
 	if(INS_IsMemoryRead(ins)){
-
+		// std::cout << INS_Disassemble(ins) << std::endl;
 		INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)memOp, IARG_MEMORYREAD_EA, IARG_MEMORYREAD_SIZE, IARG_END);
 
 		if(INS_HasMemoryRead2(ins)){
-			std::cout << INS_Disassemble(ins) << std::endl;
+			// std::cout << INS_Disassemble(ins) << std::endl;
 
 			INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)memOp, IARG_MEMORYREAD2_EA, IARG_MEMORYREAD_SIZE, IARG_END);
 		}

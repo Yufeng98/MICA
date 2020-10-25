@@ -619,19 +619,25 @@ int main(int argc, char* argv[]){
 			break;
 		case MODE_STRIDE:
 			init_stride();
+			PIN_InitSymbols();
 			PIN_Init(argc, argv);
+			RTN_AddInstrumentFunction(Routine, 0);
 			INS_AddInstrumentFunction(Instruction_stride_only, 0);
 			PIN_AddFiniFunction(Fini_stride_only, 0);
 			break;
 		case MODE_MEMFOOTPRINT:
 			init_memfootprint();
+			PIN_InitSymbols();
 			PIN_Init(argc, argv);
+			RTN_AddInstrumentFunction(Routine, 0);
 			INS_AddInstrumentFunction(Instruction_memfootprint_only, 0);
 			PIN_AddFiniFunction(Fini_memfootprint_only, 0);
 			break;
 		case MODE_MEMSTACKDIST:
 			init_memstackdist();
+			PIN_InitSymbols();
 			PIN_Init(argc, argv);
+			RTN_AddInstrumentFunction(Routine, 0);
 			INS_AddInstrumentFunction(Instruction_memstackdist_only, 0);
 			PIN_AddFiniFunction(Fini_memstackdist_only, 0);
 			break;

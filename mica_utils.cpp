@@ -17,6 +17,7 @@ memNode* lookup(nlist** table, ADDRINT key){
 
 	nlist* np;
 
+	// MAX_MEM_TABLE_ENTRIES = 12289
 	for (np = table[key % MAX_MEM_TABLE_ENTRIES]; np != (nlist*)NULL; np = np->next){
 		if(np-> id == key)
 			return np->mem;

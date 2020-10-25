@@ -187,8 +187,10 @@ UINT32 index_memRead_stride(int nth_occur, ADDRINT ins_addr){
 	for(i=1; i <= readIndex; i++){
 		if(indices_memRead[i] == ins_addr)
 			j++;
-		if(j==nth_occur)
+		if(j==nth_occur){
+			// std::cout << std::hex << indices_memRead[i] << std::endl;
 			return i; /* found */
+		}
 	}
 	return 0; /* not found */
 }
@@ -281,7 +283,7 @@ VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size){
 	ADDRINT stride;
 
 	numReadInstrsAnalyzed++;
-
+	// std::cout << std::hex << "effAddr: " << effAddr << " instrRead[index]: " << instrRead[index] << " " << index << std::endl;
 	/* local stride	*/
 	/* avoid negative values, has to be done like this (not stride < 0 => stride = -stride (avoid problems with unsigned values)) */
 	if(effAddr > instrRead[index])
@@ -350,6 +352,7 @@ UINT32 stride_index_memRead1(ADDRINT a){
 			reallocate_readArray_stride();
 		}
 		index = readIndex;
+		// std::cout << "index: " << index <<std::endl;
 
 		register_memRead_stride(a);
 	}
@@ -424,50 +427,65 @@ VOID fini_stride(INT32 code, VOID* v){
 	else{
 		output_file_stride.open(mkfilename("stride_phases_int"), ios::out|ios::app);
 	}
-	output_file_stride << numReadInstrsAnalyzed;
+	output_file_stride << "numReadInstrsAnalyzed: " << numReadInstrsAnalyzed;
 	/* local read distribution */
-	cum = 0;
-	for(i = 0; i < MAX_DISTR; i++){
+	cum = localReadDistrib[0];
+	double score = 0;
+	output_file_stride << "\nlocal read distribution\n";
+	for(i = 1; i < MAX_DISTR; i++){
 		cum += localReadDistrib[i];
-		if( (i == 0) || (i == 8) || (i == 64) || (i == 512) || (i == 4096) || (i == 32768) || (i == 262144) ){
-			output_file_stride << " " << cum;
+		if( (i == 1) || (i == 8) || (i == 64) || (i == 512) || (i == 4096) || (i == 32768) || (i == 262144) ){
+			output_file_stride << "i: " << i << " sum: "  << cum << "\n";
 		}
+		score += localReadDistrib[i]/i;
 		if(i == 262144)
 			break;
 	}
+	output_file_stride << "local read score: " << score;
 	/* global read distribution */
-	cum = 0;
-	for(i = 0; i < MAX_DISTR; i++){
+	cum = globalReadDistrib[0];
+	score = 0;
+	output_file_stride << "\ngloble read distribution\n";
+	for(i = 1; i < MAX_DISTR; i++){
 		cum += globalReadDistrib[i];
-		if( (i == 0) || (i == 8) || (i == 64) || (i == 512) || (i == 4096) || (i == 32768) || (i == 262144) ){
-			output_file_stride << " " << cum;
+		if( (i == 1) || (i == 8) || (i == 64) || (i == 512) || (i == 4096) || (i == 32768) || (i == 262144) ){
+			output_file_stride << "i: " << i << " sum: "  << cum << "\n";
 		}
+		score += globalReadDistrib[i]/i;
 		if(i == 262144)
 			break;
 	}
-	output_file_stride << " " << numWriteInstrsAnalyzed;
+	output_file_stride << "globle read score: " << score;
+	output_file_stride << "\n\nnumWriteInstrsAnalyzed: " << numWriteInstrsAnalyzed;
 	/* local write distribution */
-	cum = 0;
-	for(i = 0; i < MAX_DISTR; i++){
+	cum = localWriteDistrib[0];
+	score = 0;
+	output_file_stride << "\nlocal write distribution\n";
+	for(i = 1; i < MAX_DISTR; i++){
 		cum += localWriteDistrib[i];
-		if( (i == 0) || (i == 8) || (i == 64) || (i == 512) || (i == 4096) || (i == 32768) || (i == 262144) ){
-			output_file_stride << " " << cum;
+		if( (i == 1) || (i == 8) || (i == 64) || (i == 512) || (i == 4096) || (i == 32768) || (i == 262144) ){
+			output_file_stride << "i: " << i << " sum: "  << cum << "\n";
 		}
+		score += localWriteDistrib[i]/i;
 		if(i == 262144)
 			break;
 	}
+	output_file_stride << "local write score: " << score;
 	/* global write distribution */
-	cum = 0;
-	for(i = 0; i < MAX_DISTR; i++){
+	cum = globalWriteDistrib[0];
+	score = 0;
+	output_file_stride << "\nglobal write distribution\n";
+	for(i = 1; i < MAX_DISTR; i++){
 		cum += globalWriteDistrib[i];
-		if( (i == 0) || (i == 8) || (i == 64) || (i == 512) || (i == 4096) || (i == 32768) ){
-			output_file_stride << " " << cum;
+		if( (i == 1) || (i == 8) || (i == 64) || (i == 512) || (i == 4096) || (i == 32768) || (i == 262144) ){
+			output_file_stride << "i: " << i << " sum: "  << cum << "\n";
 		}
+		score += globalWriteDistrib[i]/i;
 		if(i == 262144){
-			output_file_stride << " " << cum << endl;
 			break;
 		}
 	}
+	output_file_stride << "global write score: " << score;
 	//output_file_stride << "number of instructions: " << total_ins_count_for_hpc_alignment << endl;
 	output_file_stride.close();
 }
