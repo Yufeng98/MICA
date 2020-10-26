@@ -415,10 +415,13 @@ VOID fini_memstackdist(INT32 code, VOID* v){
 		output_file_memstackdist.open(mkfilename("memstackdist_phases_int"), ios::out|ios::app);
 	}
 	output_file_memstackdist << mem_ref_cnt << " " << cold_refs;
-	for(i=0; i < BUCKET_CNT; i++){
+	double temporal_locality = 0;
+	output_file_memstackdist << " " << buckets[0];
+	for(i=1; i < BUCKET_CNT; i++){
 		output_file_memstackdist << " " << buckets[i];
+		temporal_locality += (buckets[i] - buckets[i-1]) * (BUCKET_CNT - (i-1)) / BUCKET_CNT;
 	}
 	//output_file_memstackdist << endl << "number of instructions: " << total_ins_count_for_hpc_alignment << endl;
-	output_file_memstackdist << " ";
+	output_file_memstackdist << "\ntemporal_locality: " << temporal_locality << endl;
 	output_file_memstackdist.close();
 }
