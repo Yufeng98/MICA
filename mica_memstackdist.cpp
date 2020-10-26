@@ -416,10 +416,12 @@ VOID fini_memstackdist(INT32 code, VOID* v){
 	}
 	output_file_memstackdist << mem_ref_cnt << " " << cold_refs;
 	double temporal_locality = 0;
-	output_file_memstackdist << " " << buckets[0];
-	for(i=1; i < BUCKET_CNT; i++){
+	static INT64 buckets_acc[BUCKET_CNT+1];
+	buckets_acc[0] = 0;
+	for(i=0; i < BUCKET_CNT; i++){
+		buckets_acc[i+1] = buckets[i];
 		output_file_memstackdist << " " << buckets[i];
-		temporal_locality += (buckets[i] - buckets[i-1]) * (BUCKET_CNT - (i-1)) / BUCKET_CNT;
+		temporal_locality += (buckets_acc[i+1] - buckets_acc[i]) * (BUCKET_CNT - i) / BUCKET_CNT;
 	}
 	//output_file_memstackdist << endl << "number of instructions: " << total_ins_count_for_hpc_alignment << endl;
 	output_file_memstackdist << "\ntemporal_locality: " << temporal_locality << endl;
