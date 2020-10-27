@@ -10,7 +10,7 @@
 #include "mica.h"
 
 void init_stride();
-VOID instrument_stride(INS ins, VOID* v);
+VOID instrument_stride(INS ins, VOID* v, bool is_ROI);
 VOID fini_stride(INT32 code, VOID* v);
 
 UINT32 stride_index_memRead1(ADDRINT a);

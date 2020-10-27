@@ -10,7 +10,7 @@
 #include "mica.h"
 
 void init_memstackdist();
-VOID instrument_memstackdist(INS ins, VOID* v);
+VOID instrument_memstackdist(INS ins, VOID* v, bool is_ROI);
 VOID fini_memstackdist(INT32 code, VOID* v);
 
 VOID memstackdist_memRead(ADDRINT effMemAddr, ADDRINT size);
