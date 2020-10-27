@@ -359,13 +359,13 @@ VOID memstackdist_memRead(ADDRINT effMemAddr, ADDRINT size){
 	for(a = addr; a <= endAddr; a++){
 
 		/* split the cache line address into hash key of chunk and index in chunk */
-		upperAddr = a >> LOG_MAX_MEM_ENTRIES;
-		indexInChunk = a & MASK_MAX_MEM_ENTRIES;
+		upperAddr = a >> LOG_MAX_MEM_ENTRIES;	// address of chunk
+		indexInChunk = a & MASK_MAX_MEM_ENTRIES;	// index inside chunk
 
 		chunk = entry_lookup(hashTableCacheBlocks_fast, upperAddr);
 		if(chunk == NULL) chunk = entry_install(hashTableCacheBlocks_fast, upperAddr);
 
-		entry_for_addr = chunk[indexInChunk];
+		entry_for_addr = chunk[indexInChunk];	// cache line
 
 		/* determine reuse distance for this access (if it has been accessed before) */
 		INT64 b = det_reuse_dist_bucket(entry_for_addr);
@@ -386,8 +386,8 @@ VOID memstackdist_memRead(ADDRINT effMemAddr, ADDRINT size){
 	}
 }
 
-VOID instrument_memstackdist(INS ins, VOID *v){
-
+VOID instrument_memstackdist(INS ins, VOID *v, bool is_ROI){
+	if (!is_ROI) return;
 	if( INS_IsMemoryRead(ins) ){
 
 		INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)memstackdist_memRead, IARG_MEMORYREAD_EA, IARG_MEMORYREAD_SIZE, IARG_END);

@@ -384,8 +384,8 @@ UINT32 stride_index_memWrite(ADDRINT a){
 }
 
 /* instrumenting (instruction level) */
-VOID instrument_stride(INS ins, VOID* v){
-
+VOID instrument_stride(INS ins, VOID* v, bool is_ROI){
+	if (!is_ROI) return;
 	UINT32 index;
 
 	if( INS_IsMemoryRead(ins) ){ // instruction has memory read operand
