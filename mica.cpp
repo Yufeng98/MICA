@@ -376,7 +376,7 @@ VOID Instruction_stride_only(INS ins, VOID* v){
 		INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)all_instr_intervals_count_always, IARG_END);
 	}
 
-	instrument_stride(ins, v);
+	instrument_stride(ins, v, isROI);
 }
 
 VOID Fini_stride_only(INT32 code, VOID* v){
@@ -436,7 +436,7 @@ VOID Instruction_memstackdist_only(INS ins, VOID* v){
 		INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)all_instr_intervals_count_always, IARG_END);
 	}
 
-	instrument_memstackdist(ins, v);
+	instrument_memstackdist(ins, v, isROI);
 }
 
 VOID Fini_memstackdist_only(INT32 code, VOID* v){
