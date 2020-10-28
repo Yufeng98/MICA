@@ -658,6 +658,7 @@ VOID instrument_itypes(INS ins, VOID* v, bool is_ROI){
 			
 			if(group_identifiers[i][j].type == identifier_type::ID_TYPE_CATEGORY){
 				if(strcmp(group_identifiers[i][j].str, cat) == 0){
+					if (i==5 && j==9) std::cout << INS_Disassemble(ins) << std::endl;
 					INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
 					categorized = true;
 					break;
