@@ -74,7 +74,7 @@ VOID itypes_count(UINT32 gid){
 // initialize default groups
 VOID init_itypes_default_groups(){
 
-	number_of_groups = 33;
+	number_of_groups = 21;
 
 	group_identifiers = (identifier**)checked_malloc((number_of_groups+1)*sizeof(identifier*));
 	group_ids_cnt = (INT64*)checked_malloc((number_of_groups+1)*sizeof(INT64));
@@ -448,66 +448,6 @@ VOID init_itypes_default_groups(){
 	group_identifiers[20][2].type = identifier_type::ID_TYPE_OPCODE;
 	group_identifiers[20][2].str = checked_strdup("VBLENDVPS");
 
-	group_ids_cnt[21] = 1;
-	group_identifiers[21] = (identifier*)checked_malloc(group_ids_cnt[21]*sizeof(identifier));
-	group_identifiers[21][0].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[21][0].str = checked_strdup("INTERRUPT");
-
-	group_ids_cnt[22] = 1;
-	group_identifiers[22] = (identifier*)checked_malloc(group_ids_cnt[22]*sizeof(identifier));
-	group_identifiers[22][0].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[22][0].str = checked_strdup("ROTATE");
-
-	group_ids_cnt[23] = 1;
-	group_identifiers[23] = (identifier*)checked_malloc(group_ids_cnt[23]*sizeof(identifier));
-	group_identifiers[23][0].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[23][0].str = checked_strdup("SEMAPHORE");
-
-	group_ids_cnt[24] = 1;
-	group_identifiers[24] = (identifier*)checked_malloc(group_ids_cnt[24]*sizeof(identifier));
-	group_identifiers[24][0].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[24][0].str = checked_strdup("CMOV");
-
-	group_ids_cnt[25] = 1;
-	group_identifiers[25] = (identifier*)checked_malloc(group_ids_cnt[25]*sizeof(identifier));
-	group_identifiers[25][0].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[25][0].str = checked_strdup("SYSTEM");
-
-	group_ids_cnt[26] = 1;
-	group_identifiers[26] = (identifier*)checked_malloc(group_ids_cnt[26]*sizeof(identifier));
-	group_identifiers[26][0].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[26][0].str = checked_strdup("MISC");
-
-	group_ids_cnt[27] = 1;
-	group_identifiers[27] = (identifier*)checked_malloc(group_ids_cnt[27]*sizeof(identifier));
-	group_identifiers[27][0].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[27][0].str = checked_strdup("PREFETCH");
-
-	group_ids_cnt[28] = 1;
-	group_identifiers[28] = (identifier*)checked_malloc(group_ids_cnt[28]*sizeof(identifier));
-	group_identifiers[28][0].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[28][0].str = checked_strdup("SYSCALL");
-
-	group_ids_cnt[29] = 1;
-	group_identifiers[29] = (identifier*)checked_malloc(group_ids_cnt[29]*sizeof(identifier));
-	group_identifiers[29][0].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[29][0].str = checked_strdup("CONVERT");
-
-	group_ids_cnt[30] = 1;
-	group_identifiers[30] = (identifier*)checked_malloc(group_ids_cnt[30]*sizeof(identifier));
-	group_identifiers[30][0].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[30][0].str = checked_strdup("XSAVE");
-
-	group_ids_cnt[31] = 1;
-	group_identifiers[31] = (identifier*)checked_malloc(group_ids_cnt[31]*sizeof(identifier));
-	group_identifiers[31][0].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[31][0].str = checked_strdup("FXSAVE");
-
-	group_ids_cnt[32] = 1;
-	group_identifiers[32] = (identifier*)checked_malloc(group_ids_cnt[32]*sizeof(identifier));
-	group_identifiers[32][0].type = identifier_type::ID_TYPE_CATEGORY;
-	group_identifiers[32][0].str = checked_strdup("BROADCAST");
-
 }
 
 /* initializing */
@@ -658,6 +598,7 @@ VOID instrument_itypes(INS ins, VOID* v, bool is_ROI){
 			
 			if(group_identifiers[i][j].type == identifier_type::ID_TYPE_CATEGORY){
 				if(strcmp(group_identifiers[i][j].str, cat) == 0){
+					if (i==9 && j==5) std::cout << INS_Disassemble(ins) << std::endl;
 					INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
 					categorized = true;
 					break;
