@@ -289,7 +289,7 @@ void register_memWrite_stride(ADDRINT ins_addr){
 }
 VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size, ADDRINT instr_addr){
 
-	ADDRINT stride = 262144;
+	ADDRINT stride;
 	// vector <ADDRINT> stride_window;
 	ADDRINT tmp_ReadAddr;
 	// std::string ins_str = str_of_ins_at[ins_addr];
@@ -319,6 +319,7 @@ VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size, ADDRINT instr_a
 	// 	stride = lastReadAddr - effAddr;
 	// lastReadAddr = effAddr + size - 1;
 
+	stride = 262144;
 	for (int i = 0; i < 31; i++) {
 		// tmp_ReadAddr = q.front();
 		// q.pop();
