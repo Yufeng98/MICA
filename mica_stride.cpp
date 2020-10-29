@@ -46,7 +46,7 @@ UINT32 indices_memWrite_size;
 
 map<ADDRINT, std::string> str_of_ins_at;
 queue <ADDRINT> q;
-UINT32 window_size;
+#define WINDOW_SIZE 32;
 
 /* initializing */
 void init_stride(){
@@ -59,8 +59,7 @@ void init_stride(){
 	
 	numRead = 1024;
 	numWrite = 1024;
-	window_size = 32;
-	for (i = 0; i < window_size; i++) q.push(0);
+	for (i = 0; i < WINDOW_SIZE; i++) q.push(0);
 
 	/* allocate memory */
 	instrRead = (ADDRINT*) checked_malloc(numRead * sizeof(ADDRINT));
@@ -327,7 +326,7 @@ VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size, ADDRINT instr_a
 		else
 			stride_window.push_back(tmp_ReadAddr - effAddr);
 	}
-	stride = *max_element(stride_window.begin(), stride_window.end())
+	stride = *max_element(stride_window.begin(), stride_window.end());
 
 	q.pop();
 	q.push(effAddr + size - 1);
