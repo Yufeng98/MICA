@@ -327,7 +327,7 @@ VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size, ADDRINT instr_a
 		else
 			stride_window.push_back(tmp_ReadAddr - effAddr);
 	}
-	stride = *max_element(stride_window.begin(), stride_window.end());
+	stride = *min_element(stride_window.begin(), stride_window.end());
 
 	q.pop();
 	q.push(effAddr + size - 1);
