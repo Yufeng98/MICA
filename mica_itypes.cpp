@@ -593,12 +593,12 @@ VOID instrument_itypes(INS ins, VOID* v, bool is_ROI){
 	// even if the instruction matches multiple identifiers in that group
 
 	for(i=0; i < number_of_groups; i++){
-		// if (i > 1) continue;
+		if (i > 1) continue;
 		for(j=0; j < group_ids_cnt[i]; j++){
 			
 			if(group_identifiers[i][j].type == identifier_type::ID_TYPE_CATEGORY){
 				if(strcmp(group_identifiers[i][j].str, cat) == 0){
-					if (i==9 && j==5) std::cout << INS_Disassemble(ins) << std::endl;
+					// if (i==9 && j==5) std::cout << INS_Disassemble(ins) << std::endl;
 					INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
 					categorized = true;
 					break;
@@ -615,7 +615,7 @@ VOID instrument_itypes(INS ins, VOID* v, bool is_ROI){
 				}
 				else{
 					if(group_identifiers[i][j].type == identifier_type::ID_TYPE_SPECIAL){
-						if(strcmp(group_identifiers[i][j].str, "mem_read") == 0 && INS_IsMemoryRead(ins) && strcmp(group_identifiers[12][0].str, cat) == 0 && strcmp(checked_strdup("MOV"), opcode) == 0){
+						if(strcmp(group_identifiers[i][j].str, "mem_read") == 0 && INS_IsMemoryRead(ins) && strcmp(group_identifiers[12][0].str, cat) == 0 && strcmp(checked_strdup("MOV"), opcode) != 0){
 							double_special++;
 							if (double_special > 1) continue;
 							INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
@@ -624,7 +624,7 @@ VOID instrument_itypes(INS ins, VOID* v, bool is_ROI){
 							break;
 						}
 						else{
-							if(strcmp(group_identifiers[i][j].str, "mem_write") == 0 && INS_IsMemoryWrite(ins) && strcmp(group_identifiers[12][0].str, cat) == 0 && strcmp(checked_strdup("MOV"), opcode) == 0){
+							if(strcmp(group_identifiers[i][j].str, "mem_write") == 0 && INS_IsMemoryWrite(ins) && strcmp(group_identifiers[12][0].str, cat) == 0 && strcmp(checked_strdup("MOV"), opcode) != 0){
 								double_special++;
 								if (double_special > 1) continue;
 								INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)itypes_count, IARG_UINT32, i, IARG_END);
