@@ -46,7 +46,7 @@ UINT32 indices_memWrite_size;
 
 map<ADDRINT, std::string> str_of_ins_at;
 queue <ADDRINT> q;
-#define WINDOW_SIZE 32;
+UINT32 window_size;
 
 /* initializing */
 void init_stride(){
@@ -59,7 +59,8 @@ void init_stride(){
 	
 	numRead = 1024;
 	numWrite = 1024;
-	for (i = 0; i < WINDOW_SIZE; i++) q.push(0);
+	window_size = 32;
+	for (i = 0; i < int(window_size); i++) q.push(0);
 
 	/* allocate memory */
 	instrRead = (ADDRINT*) checked_malloc(numRead * sizeof(ADDRINT));
