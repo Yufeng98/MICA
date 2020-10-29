@@ -17,7 +17,7 @@ UINT32 stride_index_memRead1(ADDRINT a);
 UINT32 stride_index_memRead2(ADDRINT a);
 UINT32 stride_index_memWrite(ADDRINT a);
 
-VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size);
+VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size, ADDRINT instr_addr);
 VOID writeMem_stride(UINT32 index, ADDRINT effAdrr, ADDRINT size);
 
 VOID stride_instr_interval_output();

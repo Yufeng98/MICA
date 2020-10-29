@@ -361,11 +361,12 @@ VOID memstackdist_memRead(ADDRINT effMemAddr, ADDRINT size){
 		/* split the cache line address into hash key of chunk and index in chunk */
 		upperAddr = a >> LOG_MAX_MEM_ENTRIES;	// address of chunk
 		indexInChunk = a & MASK_MAX_MEM_ENTRIES;	// index inside chunk
+		// std::cout << std::hex << "address: " << a << " upperAddr: " << upperAddr << " indexInChunk: " << indexInChunk << std::endl;
 
 		chunk = entry_lookup(hashTableCacheBlocks_fast, upperAddr);
 		if(chunk == NULL) chunk = entry_install(hashTableCacheBlocks_fast, upperAddr);
 
-		entry_for_addr = chunk[indexInChunk];	// cache line
+		entry_for_addr = chunk[indexInChunk];	// address of stack_entry array
 
 		/* determine reuse distance for this access (if it has been accessed before) */
 		INT64 b = det_reuse_dist_bucket(entry_for_addr);

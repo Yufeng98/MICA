@@ -12,6 +12,8 @@
 /* MICA includes */
 #include "mica_utils.h"
 #include "mica_stride.h"
+#include <vector>
+#include <queue>
 
 /* Global variables */
 
@@ -42,6 +44,9 @@ UINT32 indices_memRead_size;
 ADDRINT* indices_memWrite;
 UINT32 indices_memWrite_size;
 
+map<ADDRINT, std::string> str_of_ins_at;
+queue <ADDRINT> q;
+UINT32 window_size;
 
 /* initializing */
 void init_stride(){
@@ -51,8 +56,11 @@ void init_stride(){
 	/* initializing total instruction counts is done in mica.cpp */
 
 	/* initial sizes */
+	
 	numRead = 1024;
 	numWrite = 1024;
+	window_size = 32;
+	for (i = 0; i < window_size; i++) q.push(0);
 
 	/* allocate memory */
 	instrRead = (ADDRINT*) checked_malloc(numRead * sizeof(ADDRINT));
@@ -278,9 +286,14 @@ void register_memWrite_stride(ADDRINT ins_addr){
 	indices_memWrite[writeIndex++] = ins_addr;
 }
 
-VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size){
+VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size, ADDRINT instr_addr){
 
 	ADDRINT stride;
+	vector <ADDRINT> stride_window;
+	ADDRINT tmp_ReadAddr;
+	// std::string ins_str = str_of_ins_at[ins_addr];
+	// INS ins;
+	// ins.q_set(instr_addr);
 
 	numReadInstrsAnalyzed++;
 	// std::cout << std::hex << "effAddr: " << effAddr << " instrRead[index]: " << instrRead[index] << " " << index << std::endl;
@@ -299,16 +312,32 @@ VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size){
 
 	/* global stride */
 	/* avoid negative values, has to be done like this (not stride < 0 => stride = -stride (avoid problems with unsigned values)) */
-	if(effAddr > lastReadAddr)
-		stride = effAddr - lastReadAddr;
-	else
-		stride = lastReadAddr - effAddr;
+	// if(effAddr > lastReadAddr)
+	// 	stride = effAddr - lastReadAddr;
+	// else
+	// 	stride = lastReadAddr - effAddr;
+	// lastReadAddr = effAddr + size - 1;
+	
+	for (int i = 0; i < 32; i++) {
+		tmp_ReadAddr = q.front();
+		q.pop();
+		q.push(tmp_ReadAddr);
+		if(effAddr > tmp_ReadAddr)
+			stride_window.push_back(effAddr - tmp_ReadAddr);
+		else
+			stride_window.push_back(tmp_ReadAddr - effAddr);
+	}
+	stride = *max_element(stride_window.begin(), stride_window.end())
+
+	q.pop();
+	q.push(effAddr + size - 1);
 	if(stride >= MAX_DISTR){
 		stride = MAX_DISTR-1; // trim if needed
 	}
 
 	globalReadDistrib[stride]++;
-	lastReadAddr = effAddr + size - 1;
+	// if (stride > 64 && stride <= 512) std::cout << stride << " ins: " << INS_Disassemble(ins) <<endl;
+	// if (stride > 512 && stride <= 4096) std::cout << stride << " ins: " << INS_Disassemble(ins) <<endl;
 }
 
 VOID writeMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size){
@@ -391,12 +420,13 @@ VOID instrument_stride(INS ins, VOID* v, bool is_ROI){
 	if( INS_IsMemoryRead(ins) ){ // instruction has memory read operand
 
 		index = stride_index_memRead1(INS_Address(ins));
-		INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)readMem_stride, IARG_UINT32, index, IARG_MEMORYREAD_EA, IARG_MEMORYREAD_SIZE, IARG_END);
+		str_of_ins_at[INS_Address(ins)] = INS_Disassemble(ins);
+		INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)readMem_stride, IARG_UINT32, index, IARG_MEMORYREAD_EA, IARG_MEMORYREAD_SIZE, IARG_ADDRINT, ins.q(), IARG_END);
 
 		if( INS_HasMemoryRead2(ins) ){ // second memory read operand
 
 			index = stride_index_memRead2(INS_Address(ins));
-			INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)readMem_stride, IARG_UINT32, index, IARG_MEMORYREAD2_EA, IARG_MEMORYREAD_SIZE, IARG_END);
+			INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)readMem_stride, IARG_UINT32, index, IARG_MEMORYREAD2_EA, IARG_MEMORYREAD_SIZE, IARG_ADDRINT, ins.q(), IARG_END);
 		}
 	}
 

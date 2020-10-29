@@ -101,12 +101,12 @@ VOID all_instr_intervals_count_for_hpc_alignment_with_rep(UINT32 repCnt){
 	}
 }
 
-ADDRINT all_buffer_instruction_2reads_write(void* _e, ADDRINT read1_addr, ADDRINT read2_addr, ADDRINT read_size, UINT32 stride_index_memread1, UINT32 stride_index_memread2, ADDRINT write_addr, ADDRINT write_size, UINT32 stride_index_memwrite){
+ADDRINT all_buffer_instruction_2reads_write(void* _e, ADDRINT read1_addr, ADDRINT read2_addr, ADDRINT read_size, UINT32 stride_index_memread1, UINT32 stride_index_memread2, ADDRINT write_addr, ADDRINT write_size, UINT32 stride_index_memwrite, ADDRINT instr_addr){
 
 	//itypes_count_mem_read();
 	//itypes_count_mem_write();
-	readMem_stride(stride_index_memread1, read1_addr, read_size);
-	readMem_stride(stride_index_memread2, read2_addr, read_size);
+	readMem_stride(stride_index_memread1, read1_addr, read_size, instr_addr);
+	readMem_stride(stride_index_memread2, read2_addr, read_size, instr_addr);
 	writeMem_stride(stride_index_memwrite, write_addr, write_size);
 	memOp(read1_addr, read_size); // memfootprint
 	memOp(read2_addr, read_size);
@@ -121,11 +121,11 @@ ADDRINT all_buffer_instruction_2reads_write(void* _e, ADDRINT read1_addr, ADDRIN
 	return ilp_buffer_instruction_next();
 }
 
-ADDRINT all_buffer_instruction_read_write(void* _e, ADDRINT read1_addr, ADDRINT read_size, UINT32 stride_index_memread1, ADDRINT write_addr, ADDRINT write_size, UINT32 stride_index_memwrite){
+ADDRINT all_buffer_instruction_read_write(void* _e, ADDRINT read1_addr, ADDRINT read_size, UINT32 stride_index_memread1, ADDRINT write_addr, ADDRINT write_size, UINT32 stride_index_memwrite, ADDRINT instr_addr){
 
 	//itypes_count_mem_read();
 	//itypes_count_mem_write();
-	readMem_stride(stride_index_memread1, read1_addr, read_size);
+	readMem_stride(stride_index_memread1, read1_addr, read_size, instr_addr);
 	writeMem_stride(stride_index_memwrite, write_addr, write_size);
 	memOp(read1_addr, read_size); // memfootprint
 	memOp(write_addr, write_size);
@@ -137,11 +137,11 @@ ADDRINT all_buffer_instruction_read_write(void* _e, ADDRINT read1_addr, ADDRINT 
 	return ilp_buffer_instruction_next();
 }
 
-ADDRINT all_buffer_instruction_2reads(void* _e, ADDRINT read1_addr, ADDRINT read2_addr, ADDRINT read_size, UINT32 stride_index_memread1, UINT32 stride_index_memread2){
+ADDRINT all_buffer_instruction_2reads(void* _e, ADDRINT read1_addr, ADDRINT read2_addr, ADDRINT read_size, UINT32 stride_index_memread1, UINT32 stride_index_memread2, ADDRINT instr_addr){
 
 	//itypes_count_mem_read();
-	readMem_stride(stride_index_memread1, read1_addr, read_size);
-	readMem_stride(stride_index_memread2, read2_addr, read_size);
+	readMem_stride(stride_index_memread1, read1_addr, read_size, instr_addr);
+	readMem_stride(stride_index_memread2, read2_addr, read_size, instr_addr);
 	memOp(read1_addr, read_size); // memfootprint
 	memOp(read2_addr, read_size);
 	memstackdist_memRead(read1_addr, read_size); // memstackdist
@@ -153,10 +153,10 @@ ADDRINT all_buffer_instruction_2reads(void* _e, ADDRINT read1_addr, ADDRINT read
 	return ilp_buffer_instruction_next();
 }
 
-ADDRINT all_buffer_instruction_read(void* _e, ADDRINT read1_addr, ADDRINT read_size, UINT32 stride_index_memread1){
+ADDRINT all_buffer_instruction_read(void* _e, ADDRINT read1_addr, ADDRINT read_size, UINT32 stride_index_memread1, ADDRINT instr_addr){
 
 	//itypes_count_mem_read();
-	readMem_stride(stride_index_memread1, read1_addr, read_size);
+	readMem_stride(stride_index_memread1, read1_addr, read_size, instr_addr);
 	memOp(read1_addr, read_size); // memfootprint
 	memstackdist_memRead(read1_addr, read_size); // memstackdist
 	//return ilp_buffer_instruction_read(_e, read1_addr, read_size);
@@ -351,10 +351,10 @@ VOID instrument_all(INS ins, VOID* v, ins_buffer_entry* e){
 
 				stride_index_memread2 = stride_index_memRead2(INS_Address(ins));
 
-				INS_InsertIfCall(ins, IPOINT_BEFORE, (AFUNPTR)all_buffer_instruction_2reads_write, IARG_PTR, (void*)e, IARG_MEMORYREAD_EA, IARG_MEMORYREAD2_EA, IARG_MEMORYREAD_SIZE, IARG_UINT32, stride_index_memread1, IARG_UINT32, stride_index_memread2, IARG_MEMORYWRITE_EA, IARG_MEMORYWRITE_SIZE, IARG_UINT32, stride_index_memwrite, IARG_END);
+				INS_InsertIfCall(ins, IPOINT_BEFORE, (AFUNPTR)all_buffer_instruction_2reads_write, IARG_PTR, (void*)e, IARG_MEMORYREAD_EA, IARG_MEMORYREAD2_EA, IARG_MEMORYREAD_SIZE, IARG_UINT32, stride_index_memread1, IARG_UINT32, stride_index_memread2, IARG_MEMORYWRITE_EA, IARG_MEMORYWRITE_SIZE, IARG_UINT32, stride_index_memwrite, IARG_ADDRINT, ins.q(), IARG_END);
 			}
 			else{
-				INS_InsertIfCall(ins, IPOINT_BEFORE, (AFUNPTR)all_buffer_instruction_read_write, IARG_PTR, (void*)e, IARG_MEMORYREAD_EA, IARG_MEMORYREAD_SIZE, IARG_UINT32, stride_index_memread1, IARG_MEMORYWRITE_EA, IARG_MEMORYWRITE_SIZE, IARG_UINT32, stride_index_memwrite, IARG_END);
+				INS_InsertIfCall(ins, IPOINT_BEFORE, (AFUNPTR)all_buffer_instruction_read_write, IARG_PTR, (void*)e, IARG_MEMORYREAD_EA, IARG_MEMORYREAD_SIZE, IARG_UINT32, stride_index_memread1, IARG_MEMORYWRITE_EA, IARG_MEMORYWRITE_SIZE, IARG_UINT32, stride_index_memwrite, IARG_ADDRINT, ins.q(), IARG_END);
 
 			}
 		}
@@ -363,11 +363,11 @@ VOID instrument_all(INS ins, VOID* v, ins_buffer_entry* e){
 
 				stride_index_memread2 = stride_index_memRead2(INS_Address(ins));
 
-				INS_InsertIfCall(ins, IPOINT_BEFORE, (AFUNPTR)all_buffer_instruction_2reads, IARG_PTR, (void*)e, IARG_MEMORYREAD_EA, IARG_MEMORYREAD2_EA, IARG_MEMORYREAD_SIZE, IARG_UINT32 , stride_index_memread1, IARG_UINT32, stride_index_memread2, IARG_END);
+				INS_InsertIfCall(ins, IPOINT_BEFORE, (AFUNPTR)all_buffer_instruction_2reads, IARG_PTR, (void*)e, IARG_MEMORYREAD_EA, IARG_MEMORYREAD2_EA, IARG_MEMORYREAD_SIZE, IARG_UINT32 , stride_index_memread1, IARG_UINT32, stride_index_memread2, IARG_ADDRINT, ins.q(), IARG_END);
 			}
 			else{
 
-				INS_InsertIfCall(ins, IPOINT_BEFORE, (AFUNPTR)all_buffer_instruction_read, IARG_PTR, (void*)e, IARG_MEMORYREAD_EA, IARG_MEMORYREAD_SIZE, IARG_UINT32, stride_index_memread1, IARG_END);
+				INS_InsertIfCall(ins, IPOINT_BEFORE, (AFUNPTR)all_buffer_instruction_read, IARG_PTR, (void*)e, IARG_MEMORYREAD_EA, IARG_MEMORYREAD_SIZE, IARG_UINT32, stride_index_memread1, IARG_ADDRINT, ins.q(), IARG_END);
 			}
 		}
 	}
