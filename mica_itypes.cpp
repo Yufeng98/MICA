@@ -591,7 +591,6 @@ VOID instrument_itypes(INS ins, VOID* v, bool is_ROI){
 	// go over all groups, increase group count if instruction matches that group
 	// group counts are increased at most once per instruction executed,
 	// even if the instruction matches multiple identifiers in that group
-	if (INS_IsMemoryWrite(ins)) std::cout << INS_Disassemble(ins) << std::endl;
 
 	for(i=0; i < number_of_groups; i++){
 		// if (i > 1) continue;
