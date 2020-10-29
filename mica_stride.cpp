@@ -47,6 +47,7 @@ UINT32 indices_memWrite_size;
 map<ADDRINT, std::string> str_of_ins_at;
 queue <ADDRINT> q;
 UINT32 window_size;
+ADDRINT q_array[32];
 
 /* initializing */
 void init_stride(){
@@ -60,7 +61,8 @@ void init_stride(){
 	numRead = 1024;
 	numWrite = 1024;
 	window_size = 32;
-	for (i = 0; i < int(window_size); i++) q.push(0);
+	// for (i = 0; i < int(window_size); i++) q.push(0);
+	for (i = 0; i < int(window_size); i++) q_array[i] = 0;
 
 	/* allocate memory */
 	instrRead = (ADDRINT*) checked_malloc(numRead * sizeof(ADDRINT));
@@ -318,19 +320,27 @@ VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size, ADDRINT instr_a
 	// 	stride = lastReadAddr - effAddr;
 	// lastReadAddr = effAddr + size - 1;
 	
-	for (int i = 0; i < 32; i++) {
-		tmp_ReadAddr = q.front();
-		q.pop();
-		q.push(tmp_ReadAddr);
+	for (int i = 0; i < 31; i++) {
+		// tmp_ReadAddr = q.front();
+		// q.pop();
+		// q.push(tmp_ReadAddr);
+		tmp_ReadAddr = q_array[i];
+		q_array[i] = q_array[i+1];
 		if(effAddr > tmp_ReadAddr)
 			stride_window.push_back(effAddr - tmp_ReadAddr);
 		else
 			stride_window.push_back(tmp_ReadAddr - effAddr);
 	}
+	tmp_ReadAddr = q_array[31];
+	if(effAddr > tmp_ReadAddr)
+			stride_window.push_back(effAddr - tmp_ReadAddr);
+		else
+			stride_window.push_back(tmp_ReadAddr - effAddr);
 	stride = *min_element(stride_window.begin(), stride_window.end());
 
-	q.pop();
-	q.push(effAddr + size - 1);
+	// q.pop();
+	// q.push(effAddr + size - 1);
+	q_array[31] = effAddr + size - 1;
 	if(stride >= MAX_DISTR){
 		stride = MAX_DISTR-1; // trim if needed
 	}
