@@ -290,8 +290,8 @@ void register_memWrite_stride(ADDRINT ins_addr){
 
 VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size, ADDRINT instr_addr){
 
-	ADDRINT stride;
-	vector <ADDRINT> stride_window;
+	ADDRINT stride = 0;
+	// vector <ADDRINT> stride_window;
 	ADDRINT tmp_ReadAddr;
 	// std::string ins_str = str_of_ins_at[ins_addr];
 	// INS ins;
@@ -319,24 +319,41 @@ VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size, ADDRINT instr_a
 	// else
 	// 	stride = lastReadAddr - effAddr;
 	// lastReadAddr = effAddr + size - 1;
-	
+
 	for (int i = 0; i < 31; i++) {
 		// tmp_ReadAddr = q.front();
 		// q.pop();
 		// q.push(tmp_ReadAddr);
 		tmp_ReadAddr = q_array[i];
 		q_array[i] = q_array[i+1];
-		if(effAddr > tmp_ReadAddr)
-			stride_window.push_back(effAddr - tmp_ReadAddr);
+		if (effAddr > tmp_ReadAddr)
+		{
+			if ((effAddr - tmp_ReadAddr) > stride) stride = effAddr - tmp_ReadAddr;
+		}
 		else
-			stride_window.push_back(tmp_ReadAddr - effAddr);
+		{
+			if ((tmp_ReadAddr - effAddr) > stride) stride = tmp_ReadAddr - effAddr;
+		}
+		
+		// if(effAddr > tmp_ReadAddr)
+		// 	stride_window.push_back(effAddr - tmp_ReadAddr);
+		// else
+		// 	stride_window.push_back(tmp_ReadAddr - effAddr);
 	}
 	tmp_ReadAddr = q_array[31];
-	if(effAddr > tmp_ReadAddr)
-			stride_window.push_back(effAddr - tmp_ReadAddr);
-		else
-			stride_window.push_back(tmp_ReadAddr - effAddr);
-	stride = *min_element(stride_window.begin(), stride_window.end());
+	if (effAddr > tmp_ReadAddr)
+	{
+		if ((effAddr - tmp_ReadAddr) > stride) stride = effAddr - tmp_ReadAddr;
+	}
+	else
+	{
+		if ((tmp_ReadAddr - effAddr) > stride) stride = tmp_ReadAddr - effAddr;
+	}
+	// if(effAddr > tmp_ReadAddr)
+	// 	stride_window.push_back(effAddr - tmp_ReadAddr);
+	// else
+	// 	stride_window.push_back(tmp_ReadAddr - effAddr);
+	// stride = *min_element(stride_window.begin(), stride_window.end());
 
 	// q.pop();
 	// q.push(effAddr + size - 1);
