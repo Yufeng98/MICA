@@ -328,11 +328,11 @@ VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size, ADDRINT instr_a
 		q_array[i] = q_array[i+1];
 		if (effAddr > tmp_ReadAddr)
 		{
-			if ((effAddr - tmp_ReadAddr) > stride) stride = effAddr - tmp_ReadAddr;
+			if ((effAddr - tmp_ReadAddr) < stride) stride = effAddr - tmp_ReadAddr;
 		}
 		else
 		{
-			if ((tmp_ReadAddr - effAddr) > stride) stride = tmp_ReadAddr - effAddr;
+			if ((tmp_ReadAddr - effAddr) < stride) stride = tmp_ReadAddr - effAddr;
 		}
 		
 		// if(effAddr > tmp_ReadAddr)
@@ -343,11 +343,11 @@ VOID readMem_stride(UINT32 index, ADDRINT effAddr, ADDRINT size, ADDRINT instr_a
 	tmp_ReadAddr = q_array[31];
 	if (effAddr > tmp_ReadAddr)
 	{
-		if ((effAddr - tmp_ReadAddr) > stride) stride = effAddr - tmp_ReadAddr;
+		if ((effAddr - tmp_ReadAddr) < stride) stride = effAddr - tmp_ReadAddr;
 	}
 	else
 	{
-		if ((tmp_ReadAddr - effAddr) > stride) stride = tmp_ReadAddr - effAddr;
+		if ((tmp_ReadAddr - effAddr) < stride) stride = tmp_ReadAddr - effAddr;
 	}
 	// if(effAddr > tmp_ReadAddr)
 	// 	stride_window.push_back(effAddr - tmp_ReadAddr);
